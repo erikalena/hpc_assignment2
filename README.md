@@ -1,1 +1,1 @@
-# hpc_assignment2
+# FHPC - Assignment 2
