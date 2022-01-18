@@ -70,8 +70,11 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 	// allocate memory for a new node or implement something different
 	// and more efficient in terms of tree-traversal (see slides, but in any case think about a list which does not need to manage all tree data ?)
     struct knode *node = (struct knode*) malloc(sizeof(struct knode));
-
-	if( n == 1) {
+    
+    if (n == 0) {
+        node = NULL;
+    }
+	else if( n == 1) {
 		// just one point left: return a leaf 
 		node->axis = -1;
  		node->split_point = (float_t*) &points[0];
@@ -90,8 +93,6 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		//if data are homogeneous we can take the middle point 
 		int n_left = n/2;
 	    int n_right = n - n_left -1;
-		int val = points[n_left].data[new_axis];
-		
 
 		node->split_point = (float_t*) &points[n_left];
 	    node->axis  = new_axis;
@@ -119,7 +120,7 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		
 	}
 		
-	    return node; 
+	return node; 
 }
 
         

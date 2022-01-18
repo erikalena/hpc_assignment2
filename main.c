@@ -13,6 +13,12 @@ int main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     
+    if((nprocs & (nprocs - 1)) != 0) {
+        if(my_rank == master)
+            printf("USAGE: This application is meant to be run with a number of processes which is a power of two.\n");
+        MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    }
+    
     //load dataset
     if(my_rank == master) {
         if(argc > 1) {
@@ -32,7 +38,7 @@ int main(int argc, char** argv) {
 	    }
     }
     
-   /* build mpi point type */
+   // build mpi point type 
     int lengths[1] = {NDIM};
     MPI_Aint displacements[1];
     data_t point;
@@ -66,12 +72,9 @@ int main(int argc, char** argv) {
     
     data_t received[subtree_size];
     
-    // each process saves the data assigned to build
-    // its subtree
+    // each process saves the data assigned to build its subtree
 	if (my_rank != 0 ) {
-	    if(subtree_size != 0) {
-	        MPI_Recv(&received, subtree_size, mpi_point, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-	     }
+	     MPI_Recv(&received, subtree_size, mpi_point, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	    //number of process which work on each subtree is nprocs/2^level
         int pow = 1 << level;
         //while the axis used at the previous level is usually (level+1)%2
@@ -83,7 +86,7 @@ int main(int argc, char** argv) {
     // print the tree
     if(my_rank == master) printf("Print tree\n");
     print_kdtree(root, level, nprocs, my_rank);
-    
+   
  
      
 	/*
