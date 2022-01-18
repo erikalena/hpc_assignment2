@@ -22,7 +22,7 @@ struct knode {
 /* This function print the kdtree horizontally */
 void print_kdtree(struct knode* node, int level, int nprocs, int rank);
 
-void print_proc_subtree(struct knode* node, int level);
+void print_proc_subtree(struct knode* node, int level, FILE *fp);
 
 /* The following function chooses the next split dimension,
 it does this in a round robin fashion, but it takes into account

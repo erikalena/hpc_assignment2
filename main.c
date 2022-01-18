@@ -38,19 +38,8 @@ int main(int argc, char** argv) {
 	    }
     }
     
-   // build mpi point type 
-    int lengths[1] = {NDIM};
-    MPI_Aint displacements[1];
-    data_t point;
-    MPI_Aint base_address;
-    MPI_Get_address(&point, &base_address);
-    MPI_Get_address(&point.data, &displacements[0]);
-    displacements[0] = MPI_Aint_diff(displacements[0], base_address);
-
-    MPI_Datatype types[1] = { mpif_t };
-    MPI_Type_create_struct(1, lengths, displacements, types, &mpi_point);
-    MPI_Type_commit(&mpi_point);
-    ////
+    // build mpi point type 
+    build_mpi_point_type();
     
     // root node for each process and the level at which 
     // it must be placed        

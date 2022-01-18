@@ -10,21 +10,27 @@ void print_kdtree(struct knode* node, int level, int nprocs, int rank) {
     for(int i = 0; i < nprocs; i++) {
         MPI_Barrier(MPI_COMM_WORLD);
         if (i == rank) {
-          print_proc_subtree(node, level);
+            FILE *fptr = fopen("final_kdtree.txt", "a");
+            print_proc_subtree(node, level, fptr);
+            fclose(fptr);
         }
     }
 }
 
-void print_proc_subtree(struct knode* node, int level) {
+void print_proc_subtree(struct knode* node, int level, FILE *fp) {
     if(node != NULL) {
-        for(int i = 0; i < level; i++)
+        for(int i = 0; i < level; i++){
             printf("\t");
+            fprintf(fp, "\t");
+        }
         printf("(");
+        fprintf(fp,"(");
         for(int i = 0; i < NDIM; i++) {
             printf(i == (NDIM - 1)? "%.2f)\n" : "%.2f,", node->split_point[i]);
+            fprintf(fp, i == (NDIM - 1)? "%.2f)\n" : "%.2f,", node->split_point[i]);
         }
-        print_proc_subtree(node->left, level+1);
-        print_proc_subtree(node->right, level+1);
+        print_proc_subtree(node->left, level+1, fp);
+        print_proc_subtree(node->right, level+1, fp);
     }
 }
 

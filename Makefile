@@ -10,7 +10,7 @@ OPENMP = -fopenmp
 # source modules
 deps = $(IDIR)/quicksort.h $(IDIR)/kdtree.h $(IDIR)/utils.h
 src = kdtree.c quicksort.c main.c utils.c
-objs = kdtree.o quicksort.o main.o utils.o #$(patsubst %.c, %.o, $(src))
+objs = $(patsubst %.c, %.o, $(src))
 
 all: kdtree
 

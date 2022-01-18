@@ -7,6 +7,11 @@ MPI_Datatype mpi_point;
 	Auxiliary functions
 	--------------- 
 */
+
+/* Function for creating an MPI datatype which will be useful
+    to exchange data between processes */
+void build_mpi_point_type();
+
 /* Simple function for counting file lines that
     is the number of points provided */
 int countlines(char* file);

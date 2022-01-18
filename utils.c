@@ -1,5 +1,18 @@
 #include "utils.h"
 
+void build_mpi_point_type() {
+    int lengths[1] = {NDIM};
+    MPI_Aint displacements[1];
+    data_t point;
+    MPI_Aint base_address;
+    MPI_Get_address(&point, &base_address);
+    MPI_Get_address(&point.data, &displacements[0]);
+    displacements[0] = MPI_Aint_diff(displacements[0], base_address);
+
+    MPI_Datatype types[1] = { mpif_t };
+    MPI_Type_create_struct(1, lengths, displacements, types, &mpi_point);
+    MPI_Type_commit(&mpi_point);
+}
 
 int countlines(char* file) {
     FILE* fp = fopen(file, "r");
@@ -25,56 +38,48 @@ void load_dataset(data_t *data, char* file, int npoints) {
     fclose(fp);
 }
 
+
+
 struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nprocs, int rank) {
 	//printf("I'm process %d entering first split with %d procs at level %d\n", rank, nprocs, level);
+    
     struct knode *node = (struct knode*) malloc(sizeof(struct knode));
-    if (n == 0 || n == 1) {
+    
+    if(nprocs <= 1) {
         node = build_kdtree(points, n, axis, level);
-		
-		#if defined(DEBUG)
-		printf("%d: Level %d: split dimension is %d \n\t split node is (%f, %f)\n",rank, level,-1, points[0].data[0], points[0].data[1]);
-		#endif
-		
-		if(nprocs > 1) {
-		    send_subset(NULL, 0, level+1, rank + nprocs/2);
-		    first_ksplit(NULL, 0, -1, level+1, nprocs/2, rank);
-		}
+    }
+    else if (n == 0 || n == 1) {
+        node = build_kdtree(points, n, axis, level);
+        
+	    send_subset(NULL, 0, level+1, rank + nprocs/2);
+	    first_ksplit(NULL, 0, -1, level+1, nprocs/2, rank);
 	} 
 	else {		
 	    //if the number of split is smaller than the number of processes,
 		//split again, take one side and give the other half to another process
-		if(nprocs > 1) {
 		
-		    // decide new splitting axis in a round-robin fashion
-		    int new_axis = choose_split_dim(points, n, axis);
-		    
-		    //once the axis is chosen, determine the value of the split
-		    //if data are homogeneous we can take the middle point 
-		    int n_left = n/2;
-	        int n_right = n - n_left -1;
-		    
-		    node->split_point = (float_t*) &points[n_left];
-	        node->axis  = new_axis;
+	    // decide new splitting axis in a round-robin fashion
+	    int new_axis = choose_split_dim(points, n, axis);
+	    
+	    //once the axis is chosen, determine the value of the split
+	    //if data are homogeneous we can take the middle point 
+	    int n_left = n/2;
+        int n_right = n - n_left -1;
+	    
+	    node->split_point = (float_t*) &points[n_left];
+        node->axis  = new_axis;
 
-		    //left and right subsets
-		    data_t *lpoints, *rpoints;
-		    lpoints = points;
-		    rpoints = points + n_left + 1;
-	       
-	        #if defined(DEBUG)
-		    printf("I'm process %d sending right part to process %d \n Level %d: split dimension is %d \n\t split node is (%f, %f)\n", rank, rank+nprocs/2,level, new_axis, points[n_left].data[0], points[n_left].data[1]);
-		    #endif
-		
-		    // right part is sent to another process
-		    send_subset(rpoints, n_right, level+1, rank + nprocs/2);
-		    node->right = NULL;
-		    // current process continues building left branch
-		    node->left = first_ksplit(lpoints, n_left, new_axis, level+1, nprocs/2, rank);
-	    }
-		else {
-		    // create your sub_kdtree with the data you have
-		    node = build_kdtree(points, n, axis, level);
-		} 
+	    //left and right subsets
+	    data_t *lpoints, *rpoints;
+	    lpoints = points;
+	    rpoints = points + n_left + 1; 
+	    
+	    // right part is sent to another process
+	    send_subset(rpoints, n_right, level+1, rank + nprocs/2);
+	    node->right = NULL;
+	    // current process continues building left branch
+	    node->left = first_ksplit(lpoints, n_left, new_axis, level+1, nprocs/2, rank); 
+	   
 	}
 		
     return node;
