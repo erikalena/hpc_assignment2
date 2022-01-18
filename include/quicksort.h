@@ -3,6 +3,9 @@
 #include <string.h>
 #include <omp.h>
 #include <time.h>
+#include <stdlib.h>
+
+
 
 #if defined(_OPENMP)
 #define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
@@ -45,6 +48,12 @@
 #define float_t float
 #else
 #define float_t double
+#endif
+
+#if !defined(DOUBLE_PRECISION)
+#define mpif_t MPI_FLOAT
+#else
+#define mpif_t MPI_DOUBLE
 #endif
 
 #define NDIM 2

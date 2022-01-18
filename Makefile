@@ -1,4 +1,5 @@
 CC= gcc
+MPICC = mpicc
 IDIR= ./include
 CFLAGS= -Wall -pedantic -I$(IDIR)
 
@@ -14,10 +15,10 @@ objs = kdtree.o quicksort.o main.o #$(patsubst %.c, %.o, $(src))
 all: kdtree
 
 %.o: %.c $(deps)
-	$(CC) $(OPENMP) -c -o $@ $< $(CFLAGS)
+	$(MPICC) -c -o $@ $< $(CFLAGS)
 	
 kdtree: $(objs) 
-	$(CC) -g $(OPENMP) $(CFLAGS) $^ -o $@ 
+	$(MPICC) -g $(CFLAGS) $^ -o $@ 
 
 clean:
 	rm kdtree

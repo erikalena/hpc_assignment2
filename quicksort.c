@@ -97,9 +97,9 @@ void pqsort( data_t *data, int start, int end, compare_t cmp_ge )
 
       CHECK;
       
-     #pragma omp task shared(data) firstprivate(start, mid)
+    // #pragma omp task shared(data) firstprivate(start, mid)
       pqsort( data, start, mid, cmp_ge );
-     #pragma omp task shared(data) firstprivate(mid, end)
+    // #pragma omp task shared(data) firstprivate(mid, end)
       pqsort( data, mid+1, end , cmp_ge );
   }
   else {

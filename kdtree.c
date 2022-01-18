@@ -6,7 +6,16 @@
 	--------------- 
 */
 
-void print_kdtree(struct knode* node, int level) {
+void print_kdtree(struct knode* node, int level, int nprocs, int rank) {
+    for(int i = 0; i < nprocs; i++) {
+        MPI_Barrier(MPI_COMM_WORLD);
+        if (i == rank) {
+          print_proc_subtree(node, level);
+        }
+    }
+}
+
+void print_proc_subtree(struct knode* node, int level) {
     if(node != NULL) {
         for(int i = 0; i < level; i++)
             printf("\t");
@@ -14,8 +23,8 @@ void print_kdtree(struct knode* node, int level) {
         for(int i = 0; i < NDIM; i++) {
             printf(i == (NDIM - 1)? "%.2f)\n" : "%.2f,", node->split_point[i]);
         }
-        print_kdtree(node->left, level+1);
-        print_kdtree(node->right, level+1);
+        print_proc_subtree(node->left, level+1);
+        print_proc_subtree(node->right, level+1);
     }
 }
 
@@ -61,7 +70,7 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 	// allocate memory for a new node or implement something different
 	// and more efficient in terms of tree-traversal (see slides, but in any case think about a list which does not need to manage all tree data ?)
     struct knode *node = (struct knode*) malloc(sizeof(struct knode));
-    
+
 	if( n == 1) {
 		// just one point left: return a leaf 
 		node->axis = -1;
@@ -98,10 +107,10 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		
 		//recursively build up left and right subtrees 
 		if(level < MAX_LEVEL) {
-		    #pragma omp task  
+		   // #pragma omp task  
 		    node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
 		    
-		    #pragma omp task
+		   // #pragma omp task
 		    if (n > 2) 
 		        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
 		    else 
@@ -110,7 +119,7 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		
 	}
 		
-	    return node;
+	    return node; 
 }
 
         
