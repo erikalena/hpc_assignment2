@@ -41,12 +41,21 @@ void load_dataset(data_t *data, char* file, int npoints) {
 
 
 struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nprocs, int rank) {
-	//printf("I'm process %d entering first split with %d procs at level %d\n", rank, nprocs, level);
     
     struct knode *node = (struct knode*) malloc(sizeof(struct knode));
     
-    if(nprocs <= 1) {
-      node = build_kdtree(points, n, axis, level);
+    if(nprocs <= 1) { 
+        #if defined(_OPENMP)
+        #pragma omp parallel
+        {  
+            //only the first thread will spawn other threads
+            #pragma omp single nowait
+	        node = build_kdtree(points, n, axis, level);
+        }
+        #else 
+            node = build_kdtree(points, n, axis, level);
+        #endif
+      
     }
     else if (n == 0 || n == 1) {
         node = build_kdtree(points, n, axis, level);

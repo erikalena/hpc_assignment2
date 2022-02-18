@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <mpi.h>
-#include "quicksort.h"
+#include "sorting_data.h"
 
 #define NPOINTS 10
 #define MAX_VALUE 100

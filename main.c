@@ -77,23 +77,6 @@ int main(int argc, char** argv) {
     if(my_rank == master) printf("Print tree\n");
     print_kdtree(root, level, nprocs, my_rank);
    
- 
-     
-	/*
-	//build kdtree on the given dataset
-	#if defined(_OPENMP)
-
-    #pragma omp parallel
-    {
-        #pragma omp single
-	    root = build_kdtree(data, npoints, -1, 0);
-    }
-    #else 
-         root = build_kdtree(data, npoints, -1, 0);
-    #endif
-    
-    print_kdtree(root, 0);  
-    */ 
 	MPI_Finalize();
  
     return EXIT_SUCCESS;

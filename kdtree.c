@@ -7,6 +7,8 @@
 */
 
 void print_kdtree(struct knode* node, int level, int nprocs, int rank) {
+    FILE *fptr = fopen("final_kdtree.txt", "w");
+    fclose(fptr);
     for(int i = 0; i < nprocs; i++) {
         MPI_Barrier(MPI_COMM_WORLD);
         if (i == rank) {
@@ -20,13 +22,10 @@ void print_kdtree(struct knode* node, int level, int nprocs, int rank) {
 void print_proc_subtree(struct knode* node, int level, FILE *fp) {
     if(node != NULL) {
         for(int i = 0; i < level; i++){
-            printf("\t");
             fprintf(fp, "\t");
         }
-        printf("(");
         fprintf(fp,"(");
         for(int i = 0; i < NDIM; i++) {
-            printf(i == (NDIM - 1)? "%.2f)\n" : "%.2f,", node->split_point[i]);
             fprintf(fp, i == (NDIM - 1)? "%.2f)\n" : "%.2f,", node->split_point[i]);
         } 
         print_proc_subtree(node->left, level+1, fp);
@@ -112,17 +111,16 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		printf("Level %d: split dimension is %d \n\t split node is (%f, %f)\n", level, new_axis, points[n_left].data[0], points[n_left].data[1]);
 		#endif
 		
-		
 		//recursively build up left and right subtrees 
-		
-		   // #pragma omp task  
-		    node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
-		    
-		   // #pragma omp task
-
-		   node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
-
-		
+		#if defined(_OPENMP)
+		    #pragma omp task
+		        node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
+		    #pragma omp task
+		        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
+        #else
+            node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
+            node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
+        #endif
 		
 	}
 		

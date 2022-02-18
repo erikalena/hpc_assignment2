@@ -69,12 +69,18 @@ typedef struct
 typedef int (compare_t)(const void*, const void*);
 typedef int (verify_t)(data_t *, int, int, int);
 
-extern inline compare_t compare;
-extern inline compare_t compare_ge;
+compare_t compare;
+compare_t compare_ge;
 verify_t  verify_partitioning;
 verify_t  verify_sorting;
 verify_t  show_array;
 
-extern inline int partitioning( data_t *, int, int, compare_t );
+int partitioning( data_t *, int, int, compare_t );
 
+/* the following function calls other routines, in order
+to move elements with respect to a given pivot, such that
+all the elements < p are on left side and all the others are 
+on right side */
 int sorting(data_t *, int length, int axis);
+
+int find_median(data_t *data, int start, int end);
