@@ -4,7 +4,7 @@
 #include <mpi.h>
 #include "quicksort.h"
 
-#define NPOINTS 30
+#define NPOINTS 10
 #define MAX_VALUE 100
 
 #define MAX_LEVEL 100 //! arbitrarily defined

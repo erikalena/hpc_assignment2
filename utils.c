@@ -46,7 +46,7 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
     struct knode *node = (struct knode*) malloc(sizeof(struct knode));
     
     if(nprocs <= 1) {
-        node = build_kdtree(points, n, axis, level);
+      node = build_kdtree(points, n, axis, level);
     }
     else if (n == 0 || n == 1) {
         node = build_kdtree(points, n, axis, level);
@@ -60,13 +60,16 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
 		
 	    // decide new splitting axis in a round-robin fashion
 	    int new_axis = choose_split_dim(points, n, axis);
-	    
+	    // sort points with respect to chosen axis
+        int mid = sorting(points, n, new_axis);
+
 	    //once the axis is chosen, determine the value of the split
 	    //if data are homogeneous we can take the middle point 
-	    int n_left = n/2;
+	    int n_left = mid;
         int n_right = n - n_left -1;
 	    
 	    node->split_point = (float_t*) &points[n_left];
+	    
         node->axis  = new_axis;
 
 	    //left and right subsets

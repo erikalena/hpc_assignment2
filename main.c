@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
             for ( int i = 0; i < npoints; i++ )
             for (int j = 0; j < NDIM; j++)
                 data[i].data[j] = drand48()*MAX_VALUE;
+                
 	    }
     }
     

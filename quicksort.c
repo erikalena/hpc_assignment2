@@ -1,8 +1,9 @@
 #include "quicksort.h"
 
+
 int SORT_DIM = 0;
 
-void sorting(data_t* data, int npoints, int axis) {
+int sorting(data_t* data, int npoints, int axis) {
     
   //process and sort data with respect to the given axis
   SORT_DIM = axis;
@@ -10,56 +11,56 @@ void sorting(data_t* data, int npoints, int axis) {
   struct timespec ts;
   int    nthreads = 1;
   double tstart = CPU_TIME;
-  
+  int mid;
  #if defined(_OPENMP)
  {
       nthreads = omp_get_num_threads();
 	  printf("%d threads working, start sorting the array..\n", nthreads);
-      pqsort( data, 0, npoints, compare_ge);
+      mid = partitioning( data, 0, npoints, compare_ge);
     
   } 
  #else
 
-  pqsort( data, 0, npoints, compare_ge);
+  mid =partitioning( data, 0, npoints, compare_ge);//partitioning( data, 0, npoints, compare_ge);//pqsort( data, 0, npoints, compare_ge);
  #endif
   
   double tend = CPU_TIME;  
   
-  //  check sorting
+  return mid;
+}
 
-  if ( verify_sorting( data, 0, npoints, 0) ) {
-    #if defined(DEBUG)
-	    printf("Order verified, the ordered array is:\n[ ");
-	    for (int i = 0; i < npoints; i++) {
-	        printf("(");
-            for (int j = 0; j < NDIM; j++) {
-		        printf(j == (NDIM - 1)? "%.2f)," : "%.2f,", data[i].data[j]);
-		    }
-        } 
-        printf("]\n");
-        printf("Time taken to order the data %d\t%g sec\n", nthreads, tend-tstart);
-    #endif
-  }
-  else
-    fprintf(stderr, "the array is not sorted correctly\n");
+int find_median(data_t *data, int start, int end) {
+    float_t min = 100;
+    float_t max = 0;
+    for ( int i = start; i <= end-1; i++ ) {
+        if(data[i].data[SORT_DIM] < min) 
+            min = data[i].data[SORT_DIM];
+        if(data[i].data[SORT_DIM] > max) 
+            max = data[i].data[SORT_DIM];
+    }
+    float_t median = (max - min)/2;
+    int pivot = 0;
+    for ( int i = start; i <= end-1; i++ ) {
+        if(abs(data[i].data[SORT_DIM] - median) < abs(data[pivot].data[SORT_DIM] - median)) 
+            pivot = i;
+    }
+    return pivot; 
 
 }
 
-
- #define SWAP(A,B,SIZE) do {int sz = (SIZE); char *a = (A); char *b = (B); \
+#define SWAP(A,B,SIZE) do {int sz = (SIZE); char *a = (A); char *b = (B); \
     do { char _temp = *a;*a++ = *b;*b++ = _temp;} while (--sz);} while (0)
 
 inline int partitioning( data_t *data, int start, int end, compare_t cmp_ge )
 {
+	
+	
+  // pick up the closest to the middle as pivot 
+  int median = find_median(data, start, end);
   
-  // pick up the meadian of [0], [mid] and [end] as pivot
-  //
-  /* to be done */
-
-  // pick up the last element as pivot
-  //
-  --end;  
-  void *pivot = (void*)&data[end];
+  //put pivot in last position
+  SWAP( (void*)&data[median], (void*)&data[end-1], sizeof(data_t) ); 
+  void *pivot = (void*)&data[end-1];
   
   int pointbreak = end-1;
   for ( int i = start; i <= pointbreak; i++ )
@@ -71,52 +72,26 @@ inline int partitioning( data_t *data, int start, int end, compare_t cmp_ge )
     }  
     
   pointbreak += !cmp_ge( (void*)&data[pointbreak], pivot ) ;
-  SWAP( (void*)&data[pointbreak], pivot, sizeof(data_t) );
+  SWAP( (void*)&data[pointbreak], pivot, sizeof(data_t) ); 
   
+	#if defined(DEBUG)
+	#define CHECK {							\
+	if ( verify_partitioning( data, start, end, mid ) ) {		\
+		printf( "partitioning is wrong\n");				\
+		printf("%4d, %4d (%4d, %g) -> %4d, %4d  +  %4d, %4d\n",		\
+		 start, end, mid, data[mid].data[SORT_DIM],start, mid, mid+1, end); \
+		show_array( data, start, end, 0 ); }}
+	#else
+	#define CHECK
+	#endif
+	int mid = pointbreak;
+  CHECK;
+
   return pointbreak;
 }
 
 
-void pqsort( data_t *data, int start, int end, compare_t cmp_ge )
-{
 
- #if defined(DEBUG)
- #define CHECK {							\
-    if ( verify_partitioning( data, start, end, mid ) ) {		\
-      printf( "partitioning is wrong\n");				\
-      printf("%4d, %4d (%4d, %g) -> %4d, %4d  +  %4d, %4d\n",		\
-	     start, end, mid, data[mid].data[SORT_DIM],start, mid, mid+1, end); \
-      show_array( data, start, end, 0 ); }}
- #else
- #define CHECK
- #endif
-
-  int size = end-start;
-  if ( size > 2 ) {
-      int mid = partitioning( data, start, end, cmp_ge );
-
-      CHECK;
-      
-    // #pragma omp task shared(data) firstprivate(start, mid)
-      pqsort( data, start, mid, cmp_ge );
-    // #pragma omp task shared(data) firstprivate(mid, end)
-      pqsort( data, mid+1, end , cmp_ge );
-  }
-  else {
-      if ( (size == 2) && cmp_ge ( (void*)&data[start], (void*)&data[end-1] ) )
-	     SWAP( (void*)&data[start], (void*)&data[end-1], sizeof(data_t) );
-  }
-}
-
-
-
-
- 
-int verify_sorting( data_t *data, int start, int end, int not_used ) {
-  int i = start;
-  while( (++i < end) && (data[i].data[SORT_DIM] >= data[i-1].data[SORT_DIM]) );
-  return ( i == end );
-}
 
 int verify_partitioning( data_t *data, int start, int end, int mid ) {
   int failure = 0;

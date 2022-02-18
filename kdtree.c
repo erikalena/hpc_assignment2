@@ -28,7 +28,7 @@ void print_proc_subtree(struct knode* node, int level, FILE *fp) {
         for(int i = 0; i < NDIM; i++) {
             printf(i == (NDIM - 1)? "%.2f)\n" : "%.2f,", node->split_point[i]);
             fprintf(fp, i == (NDIM - 1)? "%.2f)\n" : "%.2f,", node->split_point[i]);
-        }
+        } 
         print_proc_subtree(node->left, level+1, fp);
         print_proc_subtree(node->right, level+1, fp);
     }
@@ -40,7 +40,7 @@ int choose_split_dim(data_t *points, int n, int axis) {
 	
 	// manage data extension
 	// if in one dimension the extension is more than double the 
-	// extension in the chose dimension, then the dimension is changed
+	// extension in the chosen dimension, then the dimension is changed
 	float_t extension[NDIM];
 	float_t max=0, min=MAX_VALUE;
 	float_t max_extension = new_axis;
@@ -56,9 +56,6 @@ int choose_split_dim(data_t *points, int n, int axis) {
 	
 	new_axis = extension[new_axis]*2 < max_extension ? max_extension : new_axis;
 	
-	// sort points with respect to chosen axis
-    sorting(points, n, new_axis);
-    
 	return new_axis;
 }
 
@@ -95,9 +92,12 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		// decide new splitting axis in a round-robin fashion
 		int new_axis = choose_split_dim(points, n, axis);
 		
+		// sort points with respect to chosen axis
+        int mid = sorting(points, n, new_axis);
+      
 		//once the axis is chosen, determine the value of the split
 		//if data are homogeneous we can take the middle point 
-		int n_left = n/2;
+		int n_left = mid;
 	    int n_right = n - n_left -1;
 
 		node->split_point = (float_t*) &points[n_left];
@@ -112,17 +112,17 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		printf("Level %d: split dimension is %d \n\t split node is (%f, %f)\n", level, new_axis, points[n_left].data[0], points[n_left].data[1]);
 		#endif
 		
+		
 		//recursively build up left and right subtrees 
-		if(level < MAX_LEVEL) {
+		
 		   // #pragma omp task  
 		    node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
 		    
 		   // #pragma omp task
-		    if (n > 2) 
-		        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
-		    else 
-		        node-> right = NULL;
-		}
+
+		   node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
+
+		
 		
 	}
 		

@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-
+#define DEBUG 1
 
 #if defined(_OPENMP)
 #define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
@@ -76,7 +76,5 @@ verify_t  verify_sorting;
 verify_t  show_array;
 
 extern inline int partitioning( data_t *, int, int, compare_t );
-void pqsort( data_t *, int, int, compare_t ); 
 
-
-void sorting(data_t *, int length, int axis);
+int sorting(data_t *, int length, int axis);
