@@ -41,7 +41,7 @@ int choose_split_dim(data_t *points, int n, int axis) {
 	// if in one dimension the extension is more than double the 
 	// extension in the chosen dimension, then the dimension is changed
 	float_t extension[NDIM];
-	float_t max=0, min=MAX_VALUE;
+	float_t max=MIN_VALUE, min=MAX_VALUE;
 	float_t max_extension = new_axis;
 	
 	for(int i = 0; i < NDIM; i++) {
@@ -65,8 +65,10 @@ int choose_split_dim(data_t *points, int n, int axis) {
 */
 
 struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
-    #if defined(_OPENMP)
-        printf("I'm thread %d and I'm working at level %d\n", omp_get_thread_num(), level);
+    #if defined(DEBUG)
+        #if defined(_OPENMP)
+            printf("I'm thread %d and I'm working at level %d\n", omp_get_thread_num(), level);
+        #endif
     #endif
     
 	// allocate memory for a new node or implement something different

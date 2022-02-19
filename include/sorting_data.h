@@ -5,7 +5,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define DEBUG 1
 
 #if defined(_OPENMP)
 #define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
@@ -60,14 +59,18 @@
 #define X 0
 #define Y 1
 
+#define NPOINTS 100000000
+#define MAX_VALUE 100
+#define MIN_VALUE 0
+
 typedef struct
 {
   float_t data[NDIM];
 } data_t;
 
 
-typedef int (compare_t)(const void*, const void*);
-typedef int (verify_t)(data_t *, int, int, int);
+typedef int (compare_t)(const void*, const void*, int);
+typedef int (verify_t)(data_t *, int, int, int, int);
 
 compare_t compare;
 compare_t compare_ge;
@@ -75,7 +78,7 @@ verify_t  verify_partitioning;
 verify_t  verify_sorting;
 verify_t  show_array;
 
-int partitioning( data_t *, int, int, compare_t );
+int partitioning( data_t *, int start, int end, int dim, compare_t );
 
 /* the following function calls other routines, in order
 to move elements with respect to a given pivot, such that
@@ -83,4 +86,4 @@ all the elements < p are on left side and all the others are
 on right side */
 int sorting(data_t *, int length, int axis);
 
-int find_median(data_t *data, int start, int end);
+int find_median(data_t *data, int start, int end, int dim);

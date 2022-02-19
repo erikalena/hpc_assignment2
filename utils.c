@@ -48,8 +48,7 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
         #if defined(_OPENMP)
         #pragma omp parallel
         {  
-            //only the first thread will spawn other threads
-            #pragma omp single nowait
+            #pragma omp single
 	        node = build_kdtree(points, n, axis, level);
         }
         #else 
@@ -58,8 +57,17 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
       
     }
     else if (n == 0 || n == 1) {
-        node = build_kdtree(points, n, axis, level);
+      /*  #if defined(_OPENMP)
+        #pragma omp parallel
+        {  
+            #pragma omp single
+            node = build_kdtree(points, n, axis, level);
+        }
+        #else */
+            node = build_kdtree(points, n, axis, level);
+   //     #endif
         
+        // notify to processes which are waiting   
 	    send_subset(NULL, 0, level+1, rank + nprocs/2);
 	    first_ksplit(NULL, 0, -1, level+1, nprocs/2, rank);
 	} 

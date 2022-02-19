@@ -47,15 +47,19 @@ int main(int argc, char** argv) {
     struct knode *root = NULL;
     int level;
     
+    struct timespec ts;
+    double tstart, tend;
+    
     // find first nprocs root split node
     if(my_rank == master) { 
         level = 0;
+        tstart = CPU_TIME;
 	    root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
 	} 
     
     // each process receives the size of its subset and 
     // waits for the data to start building the subtree
-    if(my_rank != 0) {
+    if(my_rank != master) {
         MPI_Recv(&subtree_size, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Recv(&level, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
@@ -63,7 +67,7 @@ int main(int argc, char** argv) {
     data_t received[subtree_size];
     
     // each process saves the data assigned to build its subtree
-	if (my_rank != 0 ) {
+	if (my_rank != master) {
 	     MPI_Recv(&received, subtree_size, mpi_point, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	    //number of process which work on each subtree is nprocs/2^level
         int pow = 1 << level;
@@ -73,9 +77,13 @@ int main(int argc, char** argv) {
     // wait for each process for finishing building
     MPI_Barrier(MPI_COMM_WORLD);
     
+    if(my_rank == master) {
+        tend = CPU_TIME;  
+        printf("Time taken to build the kdtree: %.2f \n", tend-tstart);
+    }
+    
     // print the tree
-    if(my_rank == master) printf("Print tree\n");
-    print_kdtree(root, level, nprocs, my_rank);
+    //print_kdtree(root, level, nprocs, my_rank);
    
 	MPI_Finalize();
  

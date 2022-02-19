@@ -4,10 +4,6 @@
 #include <mpi.h>
 #include "sorting_data.h"
 
-#define NPOINTS 10
-#define MAX_VALUE 100
-
-#define MAX_LEVEL 100 //! arbitrarily defined
 
 /* each kdtree point is an array of k values */
 typedef float_t kpoint[NDIM];
