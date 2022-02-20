@@ -38,7 +38,5 @@ do
     done
 done
 
-export OMP_PLACES=cores
-
 
 exit
