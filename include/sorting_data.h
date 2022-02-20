@@ -6,18 +6,9 @@
 #include <stdlib.h>
 
 
-#if defined(_OPENMP)
 #define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
                   (double)ts.tv_nsec * 1e-9)
 
-#define CPU_TIME_th (clock_gettime( CLOCK_THREAD_CPUTIME_ID, &myts ), (double)myts.tv_sec +     \
-                     (double)myts.tv_nsec * 1e-9)
-
-#else
-
-#define CPU_TIME (clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &ts ), (double)ts.tv_sec + \
-                  (double)ts.tv_nsec * 1e-9)
-#endif
 
 #if defined(DEBUG)
 #define VERBOSE
@@ -59,7 +50,7 @@
 #define X 0
 #define Y 1
 
-#define NPOINTS 100000000
+#define NPOINTS 10000000
 #define MAX_VALUE 100
 #define MIN_VALUE 0
 
