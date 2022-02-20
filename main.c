@@ -15,13 +15,16 @@ int main(int argc, char** argv) {
     
     if((nprocs & (nprocs - 1)) != 0) {
         if(my_rank == master)
-            printf("USAGE: This application is meant to be run with a number of processes which is a power of two.\n");
+            printf("USAGE: This application is meant to be run with a number of processes which is a power of two.\n USAGE: mpirun -np nprocs kdtree [npoints] [file]\n");
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     
     //load dataset
     if(my_rank == master) {
-        if(argc > 1) {
+        if(argc > 1) 
+            npoints = atoi(argv[1]);
+
+        if(argc > 2) {
             // read data if provided
             npoints = countlines(argv[1]);
             data = (data_t*)malloc(npoints*sizeof(data_t));
