@@ -1,1 +1,1 @@
-Time taken to build the kdtree: 11.04 
+Time taken to build the kdtree: 5.88 

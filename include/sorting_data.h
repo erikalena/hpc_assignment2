@@ -50,7 +50,7 @@
 #define X 0
 #define Y 1
 
-#define NPOINTS 10000000
+#define NPOINTS 100000
 #define MAX_VALUE 100
 #define MIN_VALUE 0
 
