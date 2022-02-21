@@ -57,15 +57,15 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
       
     }
     else if (n == 0 || n == 1) {
-      /*  #if defined(_OPENMP)
+        #if defined(_OPENMP)
         #pragma omp parallel
         {  
             #pragma omp single
             node = build_kdtree(points, n, axis, level);
         }
-        #else */
+        #else 
             node = build_kdtree(points, n, axis, level);
-   //     #endif
+        #endif
         
         // notify to processes which are waiting   
 	    send_subset(NULL, 0, level+1, rank + nprocs/2);

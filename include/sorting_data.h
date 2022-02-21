@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <time.h>
 #include <stdlib.h>
-
+#include <math.h>
 
 #define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
                   (double)ts.tv_nsec * 1e-9)
@@ -64,12 +64,9 @@ typedef int (compare_t)(const void*, const void*, int);
 typedef int (verify_t)(data_t *, int, int, int, int);
 
 compare_t compare;
-compare_t compare_ge;
 verify_t  verify_partitioning;
-verify_t  verify_sorting;
 verify_t  show_array;
 
-int partitioning( data_t *, int start, int end, int dim, compare_t );
 
 /* the following function calls other routines, in order
 to move elements with respect to a given pivot, such that

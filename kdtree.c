@@ -91,7 +91,7 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 	} 
 	else {		
 		// decide new splitting axis in a round-robin fashion
-		int new_axis = choose_split_dim(points, n, axis);
+		int new_axis = (axis+1)%NDIM;//choose_split_dim(points, n, axis);
 		
 		// sort points with respect to chosen axis
         int mid = sorting(points, n, new_axis);
