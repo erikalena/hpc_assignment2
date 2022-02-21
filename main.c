@@ -26,9 +26,9 @@ int main(int argc, char** argv) {
 
         if(argc > 2) {
             // read data if provided
-            npoints = countlines(argv[1]);
+            npoints = countlines(argv[2]);
             data = (data_t*)malloc(npoints*sizeof(data_t));
-            load_dataset(data, argv[1], npoints);
+            load_dataset(data, argv[2], npoints);
             MPI_Bcast(&npoints, 1, MPI_INT, 0, MPI_COMM_WORLD);
         }
 	    else {
