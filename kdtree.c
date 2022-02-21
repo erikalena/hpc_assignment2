@@ -40,7 +40,7 @@ int choose_split_dim(data_t *points, int n, int axis) {
 	// manage data extension
 	// if in one dimension the extension is more than double the 
 	// extension in the chosen dimension, then the dimension is changed
-	/*float_t extension[NDIM];
+	float_t extension[NDIM];
 	float_t max=MIN_VALUE, min=MAX_VALUE;
 	float_t max_extension = new_axis;
 	
@@ -53,7 +53,7 @@ int choose_split_dim(data_t *points, int n, int axis) {
 	    max_extension = max_extension < extension[i] ? i : max_extension;
 	}
 	
-	new_axis = extension[new_axis]*2 < max_extension ? max_extension : new_axis; */
+	new_axis = extension[new_axis]*2 < max_extension ? max_extension : new_axis; 
 	
 	return new_axis;
 }
@@ -66,9 +66,7 @@ int choose_split_dim(data_t *points, int n, int axis) {
 
 struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
     #if defined(DEBUG)
-        #if defined(_OPENMP)
-            printf("I'm thread %d and I'm working at level %d\n", omp_get_thread_num(), level);
-        #endif
+        printf("I'm thread %d and I'm working at level %d\n", omp_get_thread_num(), level);
     #endif
     
 	// allocate memory for a new node or implement something different
@@ -114,16 +112,12 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		#endif
 		
 		//recursively build up left and right subtrees 
-		#if defined(_OPENMP)
-		    #pragma omp task
-		        node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
-		    #pragma omp task
-		        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
-        #else
-            node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
-            node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
-        #endif
-		
+
+	    #pragma omp task
+	        node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
+	    #pragma omp task
+	        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
+     
 	}
 		
 	return node; 
