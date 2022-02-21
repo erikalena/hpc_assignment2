@@ -6,8 +6,10 @@ int sorting(data_t* data, int npoints, int axis) {
   int mid;
 
   #if defined(DEBUG)
+    #if defined(_OPENMP)
     int nthreads = omp_get_num_threads();
     printf("%d threads working, start partitioning the array..\n", nthreads);
+    #endif
   #endif
   mid = partitioning( data, 0, npoints, axis, compare_ge);
   
@@ -16,10 +18,24 @@ int sorting(data_t* data, int npoints, int axis) {
 
 int find_median(data_t *data, int start, int end, int dim) {
     float_t min = MAX_VALUE, max = MIN_VALUE;
-    for(int i = start; i < end; i++) {
-        max = data[i].data[dim] > max ? data[i].data[dim] : max;
-        min = data[i].data[dim] < min ? data[i].data[dim] : min;
-    }
+     
+    #if defined(_OPENMP)
+        #pragma omp parallel
+        {
+	        #pragma omp for reduction (max:max)
+	        for(int i = start; i < end; i++) 
+                max = data[i].data[dim] > max ? data[i].data[dim] : max;
+
+            #pragma omp for reduction (min:min)
+	        for(int i = start; i < end; i++) 
+                min = data[i].data[dim] < min ? data[i].data[dim] : min;
+        }
+	#else
+        for(int i = start; i < end; i++) {
+            max = data[i].data[dim] > max ? data[i].data[dim] : max;
+            min = data[i].data[dim] < min ? data[i].data[dim] : min;
+        }
+    #endif
     // find element which is closest to the median
     float_t median = (max - min)/2;
     int pivot = 0;
@@ -66,7 +82,6 @@ inline int partitioning( data_t *data, int start, int end, int dim, compare_t cm
 	#else
 	#define CHECK
 	#endif
-  CHECK;
 
   return pointbreak;
 }
