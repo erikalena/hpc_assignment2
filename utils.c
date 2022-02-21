@@ -45,8 +45,11 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
     struct knode *node = (struct knode*) malloc(sizeof(struct knode));
     
     if(nprocs <= 1) { 
-        node = build_kdtree(points, n, axis, level);
-  
+         #pragma omp parallel
+        {
+            #pragma omp single
+                node = build_kdtree(points, n, axis, level);
+        }
     }
     else if (n == 0 || n == 1) {
     

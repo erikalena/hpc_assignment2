@@ -14,6 +14,7 @@ int sorting(data_t* data, int npoints, int axis) {
   int start = 0, end = npoints, dim = axis;
   
   // pick up the closest to the middle as pivot 
+  
   int median = find_median(data, start, end, dim);
  
   //put pivot in last position
@@ -42,41 +43,19 @@ int find_median(data_t *data, int start, int end, int dim) {
     float_t median;
     int pivot = 0;
     
-    #pragma omp parallel
-   {
-        #pragma omp  for reduction (max:max) reduction(min:min)
-        for(int i = start; i < end; i++) {
-            max = data[i].data[dim] > max ? data[i].data[dim] : max;
-            min = data[i].data[dim] < min ? data[i].data[dim] : min;
-        }
-       
-        median = (max - min)/2 + min;
-        min = MAX_VALUE;
-       
-        // find element which is closest to the median
-        int index_local = 0;
-        float_t min_local = MAX_VALUE;  
-        
-        #pragma omp for 
-        for (int i = start; i < end; i++) {        
-            if (fabs(data[i].data[dim] - median) < min_local) {
-                min_local = fabs(data[i].data[dim] - median);
-                index_local = i;
-            }
-        }
-       #pragma omp critical 
-        {
-            if (min_local < min) {
-                min = min_local;
-                pivot = index_local;
-            }
-        }
+    for(int i = start; i < end; i++) {
+        max = data[i].data[dim] > max ? data[i].data[dim] : max;
+        min = data[i].data[dim] < min ? data[i].data[dim] : min;
     }
-  /*  #else 
-        for(int i = start; i < end; i++) {
-           pivot = (abs(data[i].data[dim] - median) <= abs(data[pivot].data[dim] - median)) ? i : pivot;
-        }
-    #endif */
+   
+    // find element which is closest to the median
+    median = (max - min)/2 + min;
+    min = MAX_VALUE;
+  
+    for(int i = start; i < end; i++) {
+       pivot = (abs(data[i].data[dim] - median) <= abs(data[pivot].data[dim] - median)) ? i : pivot;
+    }
+
     return pivot; 
 }
 

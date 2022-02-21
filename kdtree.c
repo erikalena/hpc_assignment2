@@ -112,12 +112,12 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		#endif
 		
 		//recursively build up left and right subtrees 
+       
+        #pragma omp task
+        node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
+        #pragma omp task
+        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
 
-	    #pragma omp task
-	        node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
-	    #pragma omp task
-	        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
-     
 	}
 		
 	return node; 
