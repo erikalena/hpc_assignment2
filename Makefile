@@ -10,12 +10,18 @@ OPENMP = -fopenmp
 # source modules
 deps = $(IDIR)/sorting_data.h $(IDIR)/kdtree.h $(IDIR)/utils.h
 src = kdtree.c sorting_data.c main.c utils.c
-objs = $(patsubst %.c, %.o, $(src))
+objs = $(patsubst %.c, obj/%.o, $(src))
 
 
-all: kdtree 
+all: create kdtree 
 
-%.o: %.c $(deps)
+create:
+ifeq ("$(wildcard obj)","")
+	-mkdir obj
+endif
+
+
+obj/%.o: %.c $(deps)
 	$(MPICC) $(OPENMP) -c -o $@ $< $(CFLAGS)
 	
 kdtree: $(objs)
@@ -31,4 +37,4 @@ kdtree: $(objs)
 	
 clean:
 	rm kdtree 
-	rm *.o
+	rm -r obj
