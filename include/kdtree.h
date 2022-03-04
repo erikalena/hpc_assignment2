@@ -16,7 +16,7 @@ struct knode {
 };
 
 /* This function print the kdtree recursively using a depth-first strategy */
-void print_kdtree(struct knode* node, int level, int nprocs, int rank)
+void print_kdtree(struct knode* node, int level, int nprocs, int rank);
 
 void print_proc_subtree(struct knode* node, int level, FILE *fp);
 

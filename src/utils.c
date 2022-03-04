@@ -16,10 +16,12 @@ void build_mpi_point_type() {
 
 int countlines(char* file) {
     FILE* fp = fopen(file, "r");
-    int count = 0,c;
+    int count = 0;
+    char c;
 	if(fp != NULL) {
         while ((c = getc(fp)) != EOF) 
-              if (c == '\n') // Increment count if this character is newline 
+            // increment count if this character is newline 
+              if (c == '\n') 
                  count++; 
     }
     fclose(fp);
