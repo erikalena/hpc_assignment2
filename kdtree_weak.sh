@@ -13,7 +13,7 @@ module load openmpi-4.1.1+gnu-9.3.0
 #store times
 times=[]
 
-printf '%s,%s,%s,\n' 'n_procs' 'n_threads' 'time_taken' > weak_scaling.csv
+printf '%s,%s,%s,\n' 'n_procs' 'n_threads' 'time_taken' > results/weak_scaling.csv
 
 
 # establish the size of the problem for each single thread
@@ -37,7 +37,7 @@ do
  
     times[i]=$(cat time_taken.txt | cut -f2 -d ':')  
 
-    printf '%s,%s,%s,\n' ${n} ${j} ${times[i]} >> weak_scaling.csv 
+    printf '%s,%s,%s,\n' ${n} ${j} ${times[i]} >> results/weak_scaling.csv 
 
 done
 

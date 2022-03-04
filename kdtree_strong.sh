@@ -13,7 +13,7 @@ module load openmpi-4.1.1+gnu-9.3.0
 #store times
 times=[]
 
-printf '%s,%s,%s,\n' 'n_procs' 'n_threads' 'time_taken' > strong_scaling.csv
+printf '%s,%s,%s,\n' 'n_procs' 'n_threads' 'time_taken' > results/strong_scaling.csv
 
 # establish the maximum number of processors on which you want to test the code
 # provide it as the maximum p s.t. 2^p = n. of processors
@@ -34,7 +34,7 @@ do
      
         times[i]=$(cat time_taken.txt | cut -f2 -d ':')  
 
-        printf '%s,%s,%s,\n' ${n} ${j} ${times[i]} >> strong_scaling.csv 
+        printf '%s,%s,%s,\n' ${n} ${j} ${times[i]} >> results/strong_scaling.csv 
     done
 done
 

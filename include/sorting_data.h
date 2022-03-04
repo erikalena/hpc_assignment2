@@ -65,7 +65,6 @@ typedef int (verify_t)(data_t *, int, int, int, int);
 
 compare_t compare;
 verify_t  verify_partitioning;
-verify_t  show_array;
 
 
 /* the following function calls other routines, in order

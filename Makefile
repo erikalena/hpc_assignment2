@@ -1,6 +1,7 @@
 
 MPICC = mpicc
 IDIR= ./include
+SRC= ./src
 CFLAGS= -Wall -pedantic -I$(IDIR)
 
 OPENMP = -fopenmp
@@ -21,7 +22,7 @@ ifeq ("$(wildcard obj)","")
 endif
 
 
-obj/%.o: %.c $(deps)
+obj/%.o: $(SRC)/%.c $(deps)
 	$(MPICC) $(OPENMP) -c -o $@ $< $(CFLAGS)
 	
 kdtree: $(objs)

@@ -8,15 +8,15 @@
 /* each kdtree point is an array of k values */
 typedef float_t kpoint[NDIM];
 
-/* structure for the nodes in the kdtree */
+/** structure for the nodes in the kdtree */
 struct knode {
 	int axis;					//on which axis we are splitting data
 	float_t* split_point;		//which is the splitting element 
 	struct knode *left, *right; //pointers to left and right subtrees
 };
 
-/* This function print the kdtree horizontally */
-void print_kdtree(struct knode* node, int level, int nprocs, int rank);
+/* This function print the kdtree recursively using a depth-first strategy */
+void print_kdtree(struct knode* node, int level, int nprocs, int rank)
 
 void print_proc_subtree(struct knode* node, int level, FILE *fp);
 
