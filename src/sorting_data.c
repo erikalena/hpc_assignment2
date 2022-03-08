@@ -5,36 +5,45 @@
 
 int sorting(data_t* data, int npoints, int axis) {
 
-  #if defined(DEBUG)
-    int nthreads = omp_get_num_threads();
-    printf("%d threads working, start partitioning the array..\n", nthreads);
-  #endif
+    #if defined(DEBUG)
+        int nthreads = omp_get_num_threads();
+        printf("%d threads working, start partitioning the array..\n", nthreads);
+    #endif
 
-  
-  int start = 0, end = npoints, dim = axis;
-  
-  // pick up the closest to the middle as pivot 
-  
-  int median = find_median(data, start, end, dim);
- 
-  //put pivot in last position
-  SWAP( (void*)&data[median], (void*)&data[end-1], sizeof(data_t) ); 
-  int pivot = end-1;
-  
-  int pointbreak = end-1;
-  for ( int i = start; i <= pointbreak; i++ )
-    if( data[i].data[dim] >= data[pivot].data[dim] ) {
-	    while( (pointbreak > i) && data[i].data[dim] >= data[pointbreak].data[dim] ) 
-	        pointbreak--;
-	    if (pointbreak > i ) 
-	        SWAP( (void*)&data[i], (void*)&data[pointbreak--], sizeof(data_t) );
-    }  
-    
-  pointbreak += !(data[pointbreak].data[dim] >= data[pivot].data[dim]) ;
-  SWAP( (void*)&data[pointbreak], (void*)&data[pivot], sizeof(data_t) ); 
-  
 
-  return pointbreak;
+    int start = 0, end = npoints, dim = axis;
+
+    // pick up the closest to the middle as pivot 
+
+    int median = find_median(data, start, end, dim);
+
+    //put pivot in last position
+    SWAP( (void*)&data[median], (void*)&data[end-1], sizeof(data_t) ); 
+    int pivot = end-1;
+
+    int idx = -1;
+    for(int j = start; j < end-1; j++) {
+        if( data[j].data[dim] <= data[pivot].data[dim] ) {
+             idx++;
+             SWAP( (void*)&data[j], (void*)&data[idx], sizeof(data_t) );
+        }
+    }
+    SWAP((void*)&data[pivot], (void*)&data[idx+1], sizeof(data_t) );
+
+    #if defined(DEBUG)
+    #define CHECK {							\
+        if ( verify_partitioning( data, start, end, idx+1, dim ) ) {		\
+          printf( "partitioning is wrong\n");				\
+        }\
+        else{\
+             printf("Everything ok\n");\
+        }}
+    #else
+    #define CHECK
+    #endif
+
+    CHECK;
+    return idx+1;
 }
 
 int find_median(data_t *data, int start, int end, int dim) {

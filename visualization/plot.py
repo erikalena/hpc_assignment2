@@ -53,7 +53,7 @@ class Tree:
                 self._viewTree(node.l, xmin, node.x, ymin, ymax)
                 self._viewTree(node.r, node.x, xmax, ymin, ymax)
             else:
-                plt.hlines(y=node.y, xmin = xmin, xmax = xmax, color='#eb348c', linestyle='-')
+                plt.hlines(y=node.y, xmin = xmin, xmax = xmax, color='#ebab34', linestyle='-')
                 self._viewTree(node.l, xmin, xmax, ymin, node.y)
                 self._viewTree(node.r, xmin, xmax, node.y, ymax)
             
@@ -63,8 +63,8 @@ if __name__ == "__main__":
     root = Tree()
     x = []
     y = []
-    
-    with open('../final_kdtree.txt') as kdtree:
+
+    with open('final_kdtree.txt') as kdtree:
         for l in kdtree:
             level = l.count('\t')
             axis = level%2
@@ -80,5 +80,12 @@ if __name__ == "__main__":
     
            
     root.viewTree(min(x), max(x), min(y), max(y))
+    
+    
+		
     plt.scatter(x,y,zorder=2)
+
+    for i,j in zip(x,y):
+        plt.annotate(f"({i},{j})",(i,j))
+        
     plt.show()

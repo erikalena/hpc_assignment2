@@ -97,7 +97,7 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		//once the axis is chosen, determine the value of the split
 		//if data are homogeneous we can take the middle point 
 		int n_left = mid;
-	    int n_right = (n > 1) ? (n - n_left -1) : 0;
+	    int n_right =  (n - n_left -1) ;
 
 		node->split_point = (float_t*) &points[n_left];
 	    node->axis  = new_axis;
@@ -106,7 +106,8 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		data_t *lpoints, *rpoints;
 		lpoints = points;
 		rpoints = points + n_left + 1;
-	   
+		
+	    
 	    #if defined(DEBUG)
 		printf("Level %d: split dimension is %d \n\t split node is (%f, %f)\n", level, new_axis, points[n_left].data[0], points[n_left].data[1]);
 		#endif
