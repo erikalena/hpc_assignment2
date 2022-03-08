@@ -57,7 +57,11 @@ int main(int argc, char** argv) {
     if(my_rank == master) { 
         level = 0;
         tstart = CPU_TIME;
+        #pragma omp parallel
+        {
+        #pragma omp single 
 	    root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
+	    }
 	} 
     
     // each process receives the size of its subset and 
@@ -75,7 +79,11 @@ int main(int argc, char** argv) {
 	    //number of process which work on each subtree is nprocs/2^level
         int pow = 1 << level;
         //while the axis used at the previous level is usually (level+1)%2
+        #pragma omp parallel
+        {
+        #pragma omp single 
         root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
+        }
     }
     // wait for each process for finishing building
     MPI_Barrier(MPI_COMM_WORLD);
@@ -85,8 +93,8 @@ int main(int argc, char** argv) {
         printf("Time taken to build the kdtree: %.2f \n", tend-tstart);
     }
     
-    // print the tree
-    print_kdtree(root, level, nprocs, my_rank);
+    //print the tree
+    //print_kdtree(root, level, nprocs, my_rank);
    
 	MPI_Finalize();
  

@@ -15,13 +15,28 @@ int main(int argc, char** argv) {
     if(world_rank == 0) {
         buf = 777;
     }
-
+    
+    MPI_Bcast(&buf, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    printf("I'm process %d and I received %d from root process\n", world_rank, buf);
     #if defined(_OPENMP)
+     
         #pragma omp parallel
-            MPI_Bcast(&buf, 1, MPI_INT, 0, MPI_COMM_WORLD);
-            printf("I'm process %d and I received %d from root process\n", world_rank, buf);
+        {
+            #pragma omp single 
+            {
+                #pragma omp task
+                printf("I'm thread %d from task 0\n", omp_get_thread_num());
+                
+                #pragma omp task
+                printf("I'm thread %d from task 1\n", omp_get_thread_num());
+                
+                #pragma omp task
+                printf("I'm thread %d from task 2\n", omp_get_thread_num());
+             }
+         }  
+         
+         MPI_Barrier( MPI_COMM_WORLD);  
     #endif
-        return EXIT_SUCCESS;
 
     MPI_Finalize();
     return 0;

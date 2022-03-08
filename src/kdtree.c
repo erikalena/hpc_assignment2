@@ -76,17 +76,6 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
     if (n == 0) {
         node = NULL;
     }
-	/*else if( n == 1) {
-		// just one point left: return a leaf 
-		node->axis = (axis+1)%NDIM;
- 		node->split_point = (float_t*) &points[0];
-		node->left = NULL;
-		node->right= NULL;
-		
-		#if defined(DEBUG)
-		printf("Level %d: split dimension is %d \n\t split node is (%f, %f)\n", level,-1, points[0].data[0], points[0].data[1]);
-		#endif
-	} */
 	else {		
 		// decide new splitting axis in a round-robin fashion
 		int new_axis = (axis+1)%NDIM;//choose_split_dim(points, n, axis);

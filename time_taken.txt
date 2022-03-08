@@ -1,1 +1,1 @@
-Time taken to build the kdtree: 0.09 
+Time taken to build the kdtree: 0.04 
