@@ -25,9 +25,12 @@ int main(int argc, char** argv) {
             #pragma omp single 
             {
                 #pragma omp task
+                {
                 printf("I'm thread %d from task 0\n", omp_get_thread_num());
-                
                 #pragma omp task
+                    printf("I'm thread %d from task 0.1\n", omp_get_thread_num());
+                }
+                
                 printf("I'm thread %d from task 1\n", omp_get_thread_num());
                 
                 #pragma omp task

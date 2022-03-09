@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
         tstart = CPU_TIME;
         #pragma omp parallel
         {
-        #pragma omp single 
+        #pragma omp single nowait
 	    root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
 	    }
 	} 
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
         //while the axis used at the previous level is usually (level+1)%2
         #pragma omp parallel
         {
-        #pragma omp single 
+        #pragma omp single nowait
         root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
         }
     }
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     }
     
     //print the tree
-    //print_kdtree(root, level, nprocs, my_rank);
+    print_kdtree(root, level, nprocs, my_rank);
    
 	MPI_Finalize();
  
