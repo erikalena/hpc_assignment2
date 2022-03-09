@@ -24,7 +24,7 @@ do
      
         times[i]=$(cat time_taken.txt | cut -f2 -d ':')  
 
-        printf '%s,%s,%s,\n' ${n} ${t} ${times[i]} >> performances.csv 
+        printf '%s,%s,%s,\n' ${n} ${j} ${times[i]} >> performances.csv 
     done
     echo $n $t
 done

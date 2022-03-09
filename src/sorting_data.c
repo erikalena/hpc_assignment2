@@ -1,7 +1,12 @@
 #include "sorting_data.h"
 
-#define SWAP(A,B,SIZE) do {int sz = (SIZE); char *a = (A); char *b = (B); \
-    do { char _temp = *a;*a++ = *b;*b++ = _temp;} while (--sz);} while (0)
+
+void swap(data_t* a, data_t* b) {
+    data_t tmp;
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
+} 
 
 int sorting(data_t* data, int npoints, int axis) {
 
@@ -18,18 +23,19 @@ int sorting(data_t* data, int npoints, int axis) {
     int median = find_median(data, start, end, dim);
 
     //put pivot in last position
-    SWAP( (void*)&data[median], (void*)&data[end-1], sizeof(data_t) ); 
+    swap((void*)&data[median], (void*)&data[end-1]);
     int pivot = end-1;
 
     int idx = -1;
     for(int j = start; j < end-1; j++) {
         if( data[j].data[dim] <= data[pivot].data[dim] ) {
              idx++;
-             SWAP( (void*)&data[j], (void*)&data[idx], sizeof(data_t) );
+             swap((void*)&data[j], (void*)&data[idx]);
         }
     }
-    SWAP((void*)&data[pivot], (void*)&data[idx+1], sizeof(data_t) );
 
+    swap((void*)&data[pivot], (void*)&data[idx+1]);
+    
     #if defined(DEBUG)
     #define CHECK {							\
         if ( verify_partitioning( data, start, end, idx+1, dim ) ) {		\
@@ -46,25 +52,54 @@ int sorting(data_t* data, int npoints, int axis) {
     return idx+1;
 }
 
+
+    
 int find_median(data_t *data, int start, int end, int dim) {
     // find max and min
     float_t min = MAX_VALUE, max = MIN_VALUE;
     float_t median;
     int pivot = 0;
     
-    for(int i = start; i < end; i++) {
-        max = data[i].data[dim] > max ? data[i].data[dim] : max;
-        min = data[i].data[dim] < min ? data[i].data[dim] : min;
-    }
+  /* #pragma omp parallel
+    {
+        #pragma omp for reduction(max:max) reduction(min:min)*/
+            for(int i = start; i < end; i++) {
+                max = data[i].data[dim] > max ? data[i].data[dim] : max;
+                min = data[i].data[dim] < min ? data[i].data[dim] : min;
+            }
+        
+  //  }
    
     // find element which is closest to the median
     median = (max - min)/2 + min;
-    min = MAX_VALUE;
-  
+
+    
     for(int i = start; i < end; i++) {
        pivot = (abs(data[i].data[dim] - median) <= abs(data[pivot].data[dim] - median)) ? i : pivot;
     }
-
+    /*
+    int index =0;
+    min = MAX_VALUE;
+    #pragma omp parallel
+    {
+        int index_local = 0;
+        double min_local = MAX_VALUE;  
+        #pragma omp for 
+        for (int i = start; i < end; i++) {        
+            if (fabs(data[i].data[dim]-median) <= min_local) {
+                min_local = fabs(data[i].data[dim]-median);
+                index_local = i;
+            }
+        }
+        #pragma omp critical 
+        {
+            if (min_local < min) {
+                min = min_local;
+                index = index_local;
+            }
+        }
+    }
+    pivot = index;*/
     return pivot; 
 }
 
@@ -86,11 +121,11 @@ int verify_partitioning( data_t *data, int start, int end, int mid, int dim) {
     }
 
   for( int i = mid+1; i < end; i++ )
-    if ( compare( (void*)&data[i], (void*)&data[mid], dim ) < 0 )
+    if (compare( (void*)&data[i], (void*)&data[mid], dim ) < 0)
       fail++;
 
   failure += fail;
-  if ( fail )
+  if (fail)
     printf("failure in second half\n");
 
   return failure;

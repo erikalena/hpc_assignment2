@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     }
     
     //print the tree
-    print_kdtree(root, level, nprocs, my_rank);
+    //print_kdtree(root, level, nprocs, my_rank);
    
 	MPI_Finalize();
  

@@ -54,10 +54,7 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
         node = build_kdtree(points, n, axis, level);
 
         // notify to processes which are waiting 
-        //#pragma omp task 
 	    send_subset(NULL, 0, level+1, rank + nprocs/2);
-        
-        //#pragma omp task 
 	    first_ksplit(NULL, 0, -1, level+1, nprocs/2, rank);
 	} 
 	else {		
@@ -84,16 +81,13 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
 	    rpoints = points + n_left + 1; 
 	    
 	    // right part is sent to another process
-	    //#pragma omp task firstprivate(rpoints, n_right, level) 
-    	    send_subset(rpoints, n_right, level+1, rank + nprocs/2);
+  	    send_subset(rpoints, n_right, level+1, rank + nprocs/2);
 	    node->right = NULL;
 	    
-	    //#pragma omp task firstprivate(lpoints, n_left, level) 
 	    // current process continues building left branch
 	    node->left = first_ksplit(lpoints, n_left, new_axis, level+1, nprocs/2, rank); 
 	    
 	}
-    //#pragma omp taskwait
     return node;
 }
 
