@@ -1,13 +1,6 @@
 #include "sorting_data.h"
 
 
-void swap(data_t* a, data_t* b) {
-    data_t tmp;
-    tmp = *a;
-    *a = *b;
-    *b = tmp;
-} 
-
 int sorting(data_t* data, int npoints, int axis) {
 
     #if defined(DEBUG)
@@ -15,10 +8,9 @@ int sorting(data_t* data, int npoints, int axis) {
         printf("%d threads working, start partitioning the array..\n", nthreads);
     #endif
 
-
     int start = 0, end = npoints, dim = axis;
 
-    // pick up the closest to the middle as pivot 
+    // pick up the closest to the median as pivot 
 
     int median = find_median(data, start, end, dim);
 
@@ -106,38 +98,44 @@ int find_median(data_t *data, int start, int end, int dim) {
 
 
 int verify_partitioning( data_t *data, int start, int end, int mid, int dim) {
-  int failure = 0;
-  int fail = 0;
-  
-  for( int i = start; i < mid; i++ )
+    int failure = 0;
+    int fail = 0;
+
+    for( int i = start; i < mid; i++ )
     if ( compare( (void*)&data[i], (void*)&data[mid], dim ) >= 0 )
       fail++;
 
-  failure += fail;
-  if ( fail )
+    failure += fail;
+    if ( fail )
     { 
       printf("failure in first half\n");
       fail = 0;
     }
 
-  for( int i = mid+1; i < end; i++ )
+    for( int i = mid+1; i < end; i++ )
     if (compare( (void*)&data[i], (void*)&data[mid], dim ) < 0)
       fail++;
 
-  failure += fail;
-  if (fail)
+    failure += fail;
+    if (fail)
     printf("failure in second half\n");
 
-  return failure;
+    return failure;
 }
 
 
 int compare( const void *A, const void *B, int dim ) {
-  data_t *a = (data_t*)A;
-  data_t *b = (data_t*)B;
+    data_t *a = (data_t*)A;
+    data_t *b = (data_t*)B;
 
-  double diff = a->data[dim] - b->data[dim];
-  return ( (diff > 0) - (diff < 0) );
+    double diff = a->data[dim] - b->data[dim];
+    return ( (diff > 0) - (diff < 0) );
 }
 
+void swap(data_t* a, data_t* b) {
+    data_t tmp;
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
+} 
 

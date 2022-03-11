@@ -76,3 +76,5 @@ on right side */
 int sorting(data_t *, int length, int axis);
 
 int find_median(data_t *data, int start, int end, int dim);
+
+void swap(data_t* a, data_t* b);

@@ -1,4 +1,3 @@
-
 MPICC = mpicc
 IDIR= ./include
 SRC= ./src
@@ -12,9 +11,9 @@ OPENMP = -fopenmp
 deps = $(IDIR)/sorting_data.h $(IDIR)/kdtree.h $(IDIR)/utils.h
 src = kdtree.c sorting_data.c main.c utils.c
 objs = $(patsubst %.c, obj/%.o, $(src))
+objs_omp = $(patsubst %.c, obj/omp_%.o, $(src))
 
-
-all: create kdtree 
+all: create kdtree omp_kdtree
 
 create:
 ifeq ("$(wildcard obj)","")
@@ -25,17 +24,16 @@ endif
 obj/%.o: $(SRC)/%.c $(deps)
 	$(MPICC) $(OPENMP) -c -o $@ $< $(CFLAGS)
 	
-kdtree: $(objs)
+omp_kdtree: $(objs)
 	$(MPICC) -g $(CFLAGS) $(OPENMP) $^ -o $@ 
 	
 # compile without openmp
-#%.o: %.c $(deps)
-#	$(MPICC) -c -o $@ $< $(CFLAGS)
-#
-#kdtree: $(objs_omp)
-#	$(MPICC) -g $(CFLAGS) $^ -o $@ 
+obj/omp_%.o: $(SRC)/%.c $(deps)
+	$(MPICC) -c -o $@ $< $(CFLAGS)
 
+kdtree: $(objs_omp)
+	$(MPICC) -g $(CFLAGS) $^ -o $@ 
 	
 clean:
-	rm kdtree 
+	rm kdtree omp_kdtree
 	rm -r obj

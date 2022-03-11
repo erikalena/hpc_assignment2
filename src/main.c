@@ -1,14 +1,21 @@
 #include "utils.h"
 
-
+void free_tree(struct knode* root) {
+    if(root != NULL) {
+        free_tree(root->right);
+        free_tree(root->left);
+        free(root);
+    }
+}
 
 int main(int argc, char** argv) {
     
     MPI_Init(&argc, &argv);
     
-    int npoints = NPOINTS, subtree_size = 0;
+    size_t npoints = NPOINTS, subtree_size = 0;
     data_t *data;
-
+    
+    
     int my_rank = 0, master = 0, nprocs = 1;
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -35,14 +42,14 @@ int main(int argc, char** argv) {
 	        // otherwise generate points randomly
 	        data = (data_t*)malloc(npoints*sizeof(data_t));
             
-            for ( int i = 0; i < npoints; i++ )
-            for (int j = 0; j < NDIM; j++)
-                data[i].data[j] = drand48()*MAX_VALUE;
+            for (int i = 0; i < npoints; i++ )
+                for (int j = 0; j < NDIM; j++)
+                    data[i].data[j] = drand48()*MAX_VALUE;
                 
 	    }
     }
     
-    // build mpi point type 
+    // build mpi_point type to exchange data points between MPI processes
     build_mpi_point_type();
     
     // root node for each process and the level at which 
@@ -57,11 +64,15 @@ int main(int argc, char** argv) {
     if(my_rank == master) { 
         level = 0;
         tstart = CPU_TIME;
-        #pragma omp parallel
-        {
-        #pragma omp single nowait
-	    root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
-	    }
+        #if defined(_OPENMP)
+            #pragma omp parallel
+            {
+                #pragma omp single nowait
+	            root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
+	        }
+	    #else
+	         root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
+	    #endif
 	} 
     
     // each process receives the size of its subset and 
@@ -76,14 +87,20 @@ int main(int argc, char** argv) {
     // each process saves the data assigned to build its subtree
 	if (my_rank != master) {
 	     MPI_Recv(&received, subtree_size, mpi_point, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	     
 	    //number of process which work on each subtree is nprocs/2^level
         int pow = 1 << level;
+        
         //while the axis used at the previous level is usually (level+1)%2
+        #if defined(_OPENMP)
         #pragma omp parallel
         {
-        #pragma omp single nowait
-        root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
+            #pragma omp single nowait
+            root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
         }
+        #else
+          root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
+        #endif
     }
     // wait for each process for finishing building
     MPI_Barrier(MPI_COMM_WORLD);
@@ -95,7 +112,10 @@ int main(int argc, char** argv) {
     
     //print the tree
     //print_kdtree(root, level, nprocs, my_rank);
-   
+    
+    free_tree(root);
+    free(data);
+	
 	MPI_Finalize();
  
     return EXIT_SUCCESS;

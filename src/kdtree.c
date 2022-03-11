@@ -41,7 +41,7 @@ int choose_split_dim(data_t *points, int n, int axis) {
 	// if in one dimension the extension is more than double the 
 	// extension in the chosen dimension, then the dimension is changed
 	float_t extension[NDIM];
-	float_t max=MIN_VALUE, min=MAX_VALUE;
+	float_t max=MIN_VALUE, min = MAX_VALUE;
 	float_t max_extension = new_axis;
 	
 	for(int i = 0; i < NDIM; i++) {
@@ -71,12 +71,13 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
     
 	// allocate memory for a new node or implement something different
 	// and more efficient in terms of tree-traversal (see slides, but in any case think about a list which does not need to manage all tree data ?)
-    struct knode *node = (struct knode*) malloc(sizeof(struct knode));
+    struct knode *node;
     
     if (n == 0) {
         node = NULL;
     }
 	else {		
+	    node = (struct knode*) malloc(sizeof(struct knode));
 		// decide new splitting axis in a round-robin fashion
 		int new_axis = (axis+1)%NDIM;//choose_split_dim(points, n, axis);
 		
@@ -102,12 +103,16 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		#endif
 		
 		//recursively build up left and right subtrees 
-       
+        #if defined(_OPENMP)
         #pragma omp task shared(lpoints, n_left, new_axis, level)  
         node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
         #pragma omp task shared(rpoints, n_right, new_axis, level) 
         node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
         #pragma omp taskwait
+        #else
+            node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
+            node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
+        #endif
 	}
 		
 	return node; 

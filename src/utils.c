@@ -44,7 +44,7 @@ void load_dataset(data_t *data, char* file, int npoints) {
 
 struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nprocs, int rank) {
     
-    struct knode *node = (struct knode*) malloc(sizeof(struct knode));
+    struct knode *node;
     
     if(nprocs <= 1) { 
          node = build_kdtree(points, n, axis, level);
@@ -58,6 +58,7 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
 	    first_ksplit(NULL, 0, -1, level+1, nprocs/2, rank);
 	} 
 	else {		
+	    node = (struct knode*) malloc(sizeof(struct knode));
 	    //if the number of split is smaller than the number of processes,
 		//split again, take one side and give the other half to another process
 		
