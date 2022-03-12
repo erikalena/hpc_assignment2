@@ -1,7 +1,5 @@
 #include "kdtree.h"
 
-MPI_Datatype mpi_point;
-
 /*
 	---------------
 	Auxiliary functions

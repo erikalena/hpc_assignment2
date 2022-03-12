@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <string.h>
-#include <omp.h>
-#include <time.h>
-#include <stdlib.h>
 #include <math.h>
-
+#include <stdlib.h>
 
 #define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
                   (double)ts.tv_nsec * 1e-9)

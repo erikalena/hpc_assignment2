@@ -1,5 +1,7 @@
 #include "utils.h"
 
+MPI_Datatype mpi_point;
+
 int main(int argc, char** argv) {
     
     MPI_Init(&argc, &argv);
@@ -105,7 +107,7 @@ int main(int argc, char** argv) {
     }
     
     //print the tree
-    //print_kdtree(root, level, nprocs, my_rank);
+    print_kdtree(root, level, nprocs, my_rank);
     
     free_tree(root);
     free(data);

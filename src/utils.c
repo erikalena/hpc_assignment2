@@ -1,5 +1,7 @@
 #include "utils.h"
 
+extern MPI_Datatype mpi_point;
+
 void build_mpi_point_type() {
     int lengths[1] = {NDIM};
     MPI_Aint displacements[1];

@@ -1,6 +1,7 @@
 #pragma once
-
-#include <stdlib.h>
+#include <string.h>
+#include <omp.h>
+#include <time.h>
 #include <mpi.h>
 #include "sorting_data.h"
 
