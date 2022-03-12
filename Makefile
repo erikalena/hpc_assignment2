@@ -21,18 +21,18 @@ ifeq ("$(wildcard obj)","")
 endif
 
 
-obj/%.o: $(SRC)/%.c $(deps)
+obj/omp_%.o: $(SRC)/%.c $(deps)
 	$(MPICC) $(OPENMP) -c -o $@ $< $(CFLAGS)
 	
-omp_kdtree: $(objs)
-	$(MPICC) -g $(CFLAGS) $(OPENMP) $^ -o $@ 
+omp_kdtree: $(objs_omp)
+	$(MPICC) $(CFLAGS) $(OPENMP) $^ -o $@ 
 	
 # compile without openmp
-obj/omp_%.o: $(SRC)/%.c $(deps)
+obj/%.o: $(SRC)/%.c $(deps)
 	$(MPICC) -c -o $@ $< $(CFLAGS)
 
-kdtree: $(objs_omp)
-	$(MPICC) -g $(CFLAGS) $^ -o $@ 
+kdtree: $(objs)
+	$(MPICC) $(CFLAGS)  $^ -o $@ 
 	
 clean:
 	rm kdtree omp_kdtree

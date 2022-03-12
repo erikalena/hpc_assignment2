@@ -95,9 +95,7 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
 void send_subset(data_t *points, int size, int level, int receiver) {
     // copy data structure and send its size, the level at which subtree
     // must be must be placed and the data structure
-    data_t buffer[size];
-    memcpy(buffer, points, (size)*sizeof(data_t));
     MPI_Send(&size, 1, MPI_INT, receiver, 0, MPI_COMM_WORLD);  
     MPI_Send(&level, 1, MPI_INT, receiver, 0, MPI_COMM_WORLD);  
-    MPI_Send(&buffer, size, mpi_point, receiver, 0, MPI_COMM_WORLD); 
+    MPI_Send(points, size, mpi_point, receiver, 0, MPI_COMM_WORLD); 
 }

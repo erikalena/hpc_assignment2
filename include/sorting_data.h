@@ -51,8 +51,8 @@
 #define X 0
 #define Y 1
 
-#define NPOINTS 1000
-#define MAX_VALUE 100
+#define NPOINTS 100000
+#define MAX_VALUE 100000
 #define MIN_VALUE 0
 
 typedef struct

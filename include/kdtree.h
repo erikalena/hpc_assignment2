@@ -5,7 +5,7 @@
 #include "sorting_data.h"
 
 
-/* each kdtree point is an array of k values */
+/** each kdtree point is an array of k values */
 typedef float_t kpoint[NDIM];
 
 /** structure for the nodes in the kdtree */
@@ -36,4 +36,6 @@ int choose_split_dim(data_t *points, int ndim, int axis);
 */
 struct knode* build_kdtree(data_t *points, int n, int axis, int level);
 
+/** recursively free kdtree */
+void free_tree(struct knode* root);
 

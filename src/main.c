@@ -1,18 +1,10 @@
 #include "utils.h"
 
-void free_tree(struct knode* root) {
-    if(root != NULL) {
-        free_tree(root->right);
-        free_tree(root->left);
-        free(root);
-    }
-}
-
 int main(int argc, char** argv) {
     
     MPI_Init(&argc, &argv);
     
-    size_t npoints = NPOINTS, subtree_size = 0;
+    int npoints = NPOINTS, subtree_size = 0;
     data_t *data;
     
     
@@ -36,7 +28,7 @@ int main(int argc, char** argv) {
             npoints = countlines(argv[2]);
             data = (data_t*)malloc(npoints*sizeof(data_t));
             load_dataset(data, argv[2], npoints);
-            MPI_Bcast(&npoints, 1, MPI_INT, 0, MPI_COMM_WORLD);
+          //  MPI_Bcast(&npoints, 1, MPI_INT, 0, MPI_COMM_WORLD);
         }
 	    else {
 	        // otherwise generate points randomly
@@ -48,6 +40,8 @@ int main(int argc, char** argv) {
                 
 	    }
     }
+    MPI_Bcast(&npoints, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    
     
     // build mpi_point type to exchange data points between MPI processes
     build_mpi_point_type();
@@ -82,11 +76,11 @@ int main(int argc, char** argv) {
         MPI_Recv(&level, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
-    data_t received[subtree_size];
+    data_t *received = (data_t*)malloc(subtree_size*sizeof(data_t));//[subtree_size];
     
     // each process saves the data assigned to build its subtree
 	if (my_rank != master) {
-	     MPI_Recv(&received, subtree_size, mpi_point, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	     MPI_Recv(received, subtree_size, mpi_point, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	     
 	    //number of process which work on each subtree is nprocs/2^level
         int pow = 1 << level;
@@ -115,6 +109,7 @@ int main(int argc, char** argv) {
     
     free_tree(root);
     free(data);
+    free(received);
 	
 	MPI_Finalize();
  

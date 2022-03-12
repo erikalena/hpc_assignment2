@@ -27,7 +27,7 @@ do
      
         times[i]=$(cat time_taken.txt | cut -f2 -d ':')  
 
-        printf '%s,%s,%s,%s\n' ${n} ${j} ${times[i]} ${ps} >> results/strong_scaling.csv 
+        printf '%s,%s,%s,%s\n' ${n} ${j} ${times[i]} ${ps} >> results/performances.csv 
     done
 done
 

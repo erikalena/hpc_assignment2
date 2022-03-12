@@ -67,7 +67,7 @@ int find_median(data_t *data, int start, int end, int dim) {
 
     
     for(int i = start; i < end; i++) {
-       pivot = (abs(data[i].data[dim] - median) <= abs(data[pivot].data[dim] - median)) ? i : pivot;
+       pivot = (abs(data[i].data[dim] - median) < abs(data[pivot].data[dim] - median)) ? i : pivot;
     }
     /*
     int index =0;

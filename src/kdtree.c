@@ -104,11 +104,11 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		
 		//recursively build up left and right subtrees 
         #if defined(_OPENMP)
-        #pragma omp task shared(lpoints, n_left, new_axis, level)  
-        node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
-        #pragma omp task shared(rpoints, n_right, new_axis, level) 
-        node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
-        #pragma omp taskwait
+            #pragma omp task shared(lpoints, n_left, new_axis, level)  
+            node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
+            #pragma omp task shared(rpoints, n_right, new_axis, level) 
+            node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
+            #pragma omp taskwait
         #else
             node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
             node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
@@ -118,6 +118,14 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 	return node; 
 }
 
-        
+
+void free_tree(struct knode* root) {
+    if(root != NULL) {
+        free_tree(root->right);
+        free_tree(root->left);
+        free(root);
+    }
+}
+ 
         
 
