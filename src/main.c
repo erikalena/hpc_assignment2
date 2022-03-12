@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
         #if defined(_OPENMP)
             #pragma omp parallel
             {
-                #pragma omp single nowait
+                #pragma omp single 
 	            root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
 	        }
 	    #else
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
         #if defined(_OPENMP)
         #pragma omp parallel
         {
-            #pragma omp single nowait
+            #pragma omp single 
             root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
         }
         #else
