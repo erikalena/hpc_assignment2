@@ -107,12 +107,13 @@ int main(int argc, char** argv) {
     }
     
     //print the tree
-    print_kdtree(root, level, nprocs, my_rank);
+    //print_kdtree(root, level, nprocs, my_rank);
     
     free_tree(root);
-    free(data);
     free(received);
-	
+	if(my_rank == master) 
+	    free(data);
+	    
 	MPI_Finalize();
  
     return EXIT_SUCCESS;
