@@ -1,6 +1,8 @@
 #include "utils.h"
 
 extern MPI_Datatype mpi_point;
+double tssend, tesend;
+double tstree, tetree;
 
 void build_mpi_point_type() {
     int lengths[1] = {NDIM};
@@ -49,7 +51,17 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
     struct knode *node;
     
     if(nprocs <= 1) { 
+         if(rank == 0) {
+            tesend = tssend == 0 ? 0 : CPU_TIME;
+            printf("Time to send: %.2f \n", tesend-tssend);
+
+	        tstree = CPU_TIME;
+         }
          node = build_kdtree(points, n, axis, level);
+         if(rank == 0) {
+            tetree = CPU_TIME;
+            printf("Time to build subtree: %.2f \n", tetree-tstree);
+         }
     }
     else if (n == 0 || n == 1) {
     
@@ -60,6 +72,10 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
 	    first_ksplit(NULL, 0, -1, level+1, nprocs/2, rank);
 	} 
 	else {		
+	    if(rank == 0 && level == 0)
+	        tssend = CPU_TIME;
+	    
+	        
 	    node = (struct knode*) malloc(sizeof(struct knode));
 	    //if the number of split is smaller than the number of processes,
 		//split again, take one side and give the other half to another process

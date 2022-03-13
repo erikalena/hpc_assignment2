@@ -35,11 +35,16 @@ int main(int argc, char** argv) {
 	    else {
 	        // otherwise generate points randomly
 	        data = (data_t*)malloc(npoints*sizeof(data_t));
-            
-            for (int i = 0; i < npoints; i++ )
-                for (int j = 0; j < NDIM; j++)
-                    data[i].data[j] = drand48()*MAX_VALUE;
-                
+	        //#if defined(_OPENMP)
+            //#pragma omp parallel for
+                for (int i = 0; i < npoints; i++ )
+                    for (int j = 0; j < NDIM; j++)
+                        data[i].data[j] = drand48()*MAX_VALUE;
+          /*  #else
+                for (int i = 0; i < npoints; i++ )
+                    for (int j = 0; j < NDIM; j++)
+                        data[i].data[j] = drand48()*MAX_VALUE;
+	        #endif*/
 	    }
     }
     MPI_Bcast(&npoints, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -53,13 +58,13 @@ int main(int argc, char** argv) {
     struct knode *root = NULL;
     int level;
     
-    struct timespec ts;
     double tstart, tend;
     
     // find first nprocs root split node
     if(my_rank == master) { 
         level = 0;
         tstart = CPU_TIME;
+        
         #if defined(_OPENMP)
             #pragma omp parallel
             {

@@ -35,5 +35,5 @@ kdtree: $(objs)
 	$(MPICC) $(CFLAGS)  $^ -o $@ 
 	
 clean:
-	rm kdtree omp_kdtree
 	rm -r obj
+	rm kdtree omp_kdtree

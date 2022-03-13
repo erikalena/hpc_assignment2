@@ -1,5 +1,9 @@
 #include "kdtree.h"
 
+#define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
+                  (double)ts.tv_nsec * 1e-9)
+                  
+struct timespec ts;
 /*
 	---------------
 	Auxiliary functions

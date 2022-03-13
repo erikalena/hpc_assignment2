@@ -59,8 +59,7 @@ int find_median(data_t *data, int start, int end, int dim) {
                 max = data[i].data[dim] > max ? data[i].data[dim] : max;
                 min = data[i].data[dim] < min ? data[i].data[dim] : min;
             }
-        
-  //  }
+    // }
    
     // find element which is closest to the median
     median = (max - min)/2 + min;
