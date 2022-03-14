@@ -12,53 +12,37 @@ module load openmpi-4.1.1+gnu-9.3.0
 
 #store times
 times=[]
+mpi_times=[]
+omp_times=[]
 
-printf '%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken' 'problem size' > results/weak_scaling_gpu.csv
+printf '%s,%s,%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken' 'mpi_times' 'omp_times' 'problem_size' > results/weak_scaling_gpu_bycore.csv
 
-
-# establish the size of the problem 
-s=1000000
-
-# use just 2 mpi process and change the
-# number of threads to be used
-t=30
+# establish the maximum number of processors on which you want to test the code
+# provide it as the maximum p s.t. 2^p = n. of processors
+p=4
 
 export OMP_PLACES=cores
+# set a maximum number of threads to be used
+t=30
 
-
-# keeping fixed the number of mpi processes
-let n=2
-
-for j in  $( seq 1 $t )
-do  
-    let ps=($j*$s*2)
-    export OMP_NUM_THREADS=$j
-    mpirun --mca btl ^openib -np $n --map-by socket ./omp_kdtree $ps > time_taken.txt
- 
-    times[i]=$(cat time_taken.txt | cut -f2 -d ':')  
-
-    printf '%s,%s,%s,%s\n' ${n} ${j} ${times[i]} ${ps} >> results/weak_scaling_gpu.csv 
-
-done
-
-# keeping fixed the number of threads 
-export OMP_NUM_THREADS=2
-j=2
-
-#change the number of MPI processes until the following power of 2
-let p=4
-
+# set problem size 
+s=1000000
 
 for i in  $( seq 0 $p )
-do  
+do
     let n=(2**$i)
-    let ps=($n*$s*2)
-    mpirun --mca btl ^openib -np $n --map-by socket ./omp_kdtree $ps > time_taken.txt
- 
-    times[i]=$(cat time_taken.txt | cut -f2 -d ':')  
+    for j in  $(seq 1 $t )
+    do  
+        export OMP_NUM_THREADS=$j
+	let ps=($n*$s*$j)
+        mpirun --mca btl ^openib -np $n --map-by core ./omp_kdtree ${ps} > time_taken.txt
+        mpi_times[j]=$(cat time_taken.txt | grep send| cut -f2 -d ':')     
+        omp_times[j]=$(cat time_taken.txt | grep subtree | cut -f2 -d ':')        
+	times[j]=$(cat time_taken.txt | grep kdtree | cut -f2 -d ':')  
 
-    printf '%s,%s,%s,%s\n' ${n} ${j} ${times[i]} ${ps} >> results/weak_scaling_gpu.csv 
-
+        printf '%s,%s,%s,%s,%s,%s\n' ${n} ${j} ${times[j]} ${mpi_times[j]} ${omp_times[j]} ${ps} >> results/weak_scaling_gpu_bycore.csv 
+    done
 done
+
 
 exit
