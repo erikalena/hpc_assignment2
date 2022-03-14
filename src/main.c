@@ -1,5 +1,6 @@
 #include "utils.h"
 
+
 MPI_Datatype mpi_point;
 
 int main(int argc, char** argv) {
@@ -59,17 +60,17 @@ int main(int argc, char** argv) {
     int level;
     
     double tstart, tend;
-    
+
     // find first nprocs root split node
     if(my_rank == master) { 
         level = 0;
         tstart = CPU_TIME;
-        
         #if defined(_OPENMP)
             #pragma omp parallel
             {
                 #pragma omp single 
-	            root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
+	                root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
+                
 	        }
 	    #else
 	         root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);

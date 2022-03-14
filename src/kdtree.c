@@ -66,7 +66,9 @@ int choose_split_dim(data_t *points, int n, int axis) {
 
 struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
     #if defined(DEBUG)
+        #if defined(_OPENMP)
         printf("I'm thread %d and I'm working at level %d\n", omp_get_thread_num(), level);
+        #endif
     #endif
     
 	// allocate memory for a new node or implement something different
@@ -108,7 +110,7 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
             node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
             #pragma omp task firstprivate(rpoints, n_right, new_axis, level) 
             node->right = build_kdtree(rpoints, n_right, new_axis, level+1);
-            //#pragma omp taskwait
+
         #else
             node->left = build_kdtree(lpoints, n_left, new_axis, level+1);
             node->right = build_kdtree(rpoints, n_right, new_axis, level+1);

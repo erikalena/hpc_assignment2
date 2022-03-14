@@ -1,8 +1,8 @@
 #include "utils.h"
 
+
 extern MPI_Datatype mpi_point;
 double tssend, tesend;
-double tstree, tetree;
 
 void build_mpi_point_type() {
     int lengths[1] = {NDIM};
@@ -45,7 +45,6 @@ void load_dataset(data_t *data, char* file, int npoints) {
 }
 
 
-
 struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nprocs, int rank) {
     
     struct knode *node;
@@ -54,14 +53,8 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
          if(rank == 0) {
             tesend = tssend == 0 ? 0 : CPU_TIME;
             printf("Time to send: %.2f \n", tesend-tssend);
-
-	        tstree = CPU_TIME;
          }
          node = build_kdtree(points, n, axis, level);
-         if(rank == 0) {
-            tetree = CPU_TIME;
-            printf("Time to build subtree: %.2f \n", tetree-tstree);
-         }
     }
     else if (n == 0 || n == 1) {
     

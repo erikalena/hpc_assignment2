@@ -2,10 +2,12 @@
 
 
 int sorting(data_t* data, int npoints, int axis) {
-
+    
     #if defined(DEBUG)
+        #if defined(_OPENMP)
         int nthreads = omp_get_num_threads();
         printf("%d threads working, start partitioning the array..\n", nthreads);
+        #endif
     #endif
 
     int start = 0, end = npoints, dim = axis;
