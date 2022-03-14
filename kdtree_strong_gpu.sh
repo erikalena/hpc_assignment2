@@ -15,7 +15,7 @@ times=[]
 mpi_times=[]
 omp_times=[]
 
-printf '%s,%s,%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken (s)' 'mpi_time' 'omp_times' 'problem_size' > results/strong_scaling_gpu.csv
+printf '%s,%s,%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken' 'mpi_time' 'omp_times' 'problem_size' > results/strong_scaling_gpu.csv
 
 # establish the maximum number of processors on which you want to test the code
 # provide it as the maximum p s.t. 2^p = n. of processors
