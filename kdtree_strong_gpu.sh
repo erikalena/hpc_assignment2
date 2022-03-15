@@ -14,14 +14,14 @@ module load openmpi-4.1.1+gnu-9.3.0
 times=[]
 mpi_times=[]
 
-printf '%s,%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken' 'mpi_time' 'problem_size' > results/strong_scaling_gpu_new.csv
+printf '%s,%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken' 'mpi_time' 'problem_size' > results/strong_scaling_gpu_mpi.csv
 
 # establish the maximum number of processors on which you want to test the code
 # provide it as the maximum p s.t. 2^p = n. of processors
 p=4
 
 export OMP_PROC_BIND=true
-export OMP_PLACES=sockets
+export OMP_PLACES=core
 
 # set a maximum number of threads to be used
 t=30
@@ -40,7 +40,7 @@ do
         mpi_times[j]=$(cat time_taken.txt | grep send | cut -f2 -d ':') 
         times[j]=$(cat time_taken.txt | grep kdtree | cut -f2 -d ':')  
 
-        printf '%s,%s,%s,%s,%s\n' ${n} ${j} ${times[j]} ${mpi_times[j]} ${ps}  >> results/strong_scaling_gpu_new.csv 
+        printf '%s,%s,%s,%s,%s\n' ${n} ${j} ${times[j]} ${mpi_times[j]} ${ps}  >> results/strong_scaling_gpu_mpi.csv 
     done
 done
 
