@@ -5,6 +5,11 @@
 #include <mpi.h>
 #include "sorting_data.h"
 
+#define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
+                  (double)ts.tv_nsec * 1e-9)
+
+    
+static struct timespec ts;
 
 /** each kdtree point is an array of k values */
 typedef float_t kpoint[NDIM];

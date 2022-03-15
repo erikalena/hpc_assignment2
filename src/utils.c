@@ -54,7 +54,17 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
             tesend = tssend == 0 ? 0 : CPU_TIME;
             printf("Time to send: %.2f \n", tesend-tssend);
          }
-         node = build_kdtree(points, n, axis, level);
+         #if defined(_OPENMP)
+            #pragma omp parallel
+            {
+                #pragma omp single 
+         		node = build_kdtree(points, n, axis, level);
+         	}
+         #else
+         	node = build_kdtree(points, n, axis, level);
+         #endif
+         	
+         
     }
     else if (n == 0 || n == 1) {
     
