@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
             load_dataset(data, argv[2], npoints);
         }
 	    else {
-	        // otherwise generate points randomly
+	        // otherwise generate data points randomly
 	        data = (data_t*)malloc(npoints*sizeof(data_t));
 	       
             for (int i = 0; i < npoints; i++ )
@@ -47,8 +47,7 @@ int main(int argc, char** argv) {
     // build mpi_point type to exchange data points between MPI processes
     build_mpi_point_type();
     
-    // root node for each process and the level at which 
-    // it must be placed        
+    // root node for each process and the level at which it must be placed        
     struct knode *root = NULL;
     int level;
     

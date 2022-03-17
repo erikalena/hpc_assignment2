@@ -4,30 +4,6 @@
 #include <stdlib.h>
 
 
-#if defined(DEBUG)
-#define VERBOSE
-#endif
-
-#if defined(VERBOSE)
-#define PRINTF(...) printf(__VA_ARGS__)
-#else
-#define PRINTF(...)
-#endif
-
-#define MAX( a, b ) ( (a)->data[HOT] >(b)->data[HOT]? (a) : (b) );
-#define MIN( a, b ) ( (a)->data[HOT] <(b)->data[HOT]? (a) : (b) );
-
-#if !defined(DATA_SIZE)
-#define DATA_SIZE 8
-#endif
-#define HOT       0
-
-#if (!defined(DEBUG) || defined(_OPENMP))
-#define N_dflt    100000
-#else
-#define N_dflt    10
-#endif
-
 #if !defined(DOUBLE_PRECISION)
 #define float_t float
 #else
@@ -40,8 +16,7 @@
 #define mpif_t MPI_DOUBLE
 #endif
 
-#define NDIM 3
-
+#define NDIM 2
 
 #define NPOINTS 100000
 #define MAX_VALUE 100000
@@ -61,11 +36,12 @@ verify_t  verify_partitioning;
 verify_t  show_array;
 
 
-/* the following function calls other routines, in order
-to move elements with respect to a given pivot, such that
-all the elements < p are on left side and all the others are 
-on right side */
-int sorting(data_t *, int length, int axis);
+/** 
+    The following function move data points with respect to a given pivot, 
+    such that all the elements < p are on left side and all the others are 
+    on right side. 
+*/
+int partitioning(data_t *data, int length, int axis);
 
 int find_median(data_t *data, int start, int end, int dim);
 

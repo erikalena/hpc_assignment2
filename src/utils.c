@@ -24,7 +24,6 @@ int countlines(char* file) {
     char c;
 	if(fp != NULL) {
         while ((c = getc(fp)) != EOF) 
-            // increment count if this character is newline 
               if (c == '\n') 
                  count++; 
     }
@@ -33,11 +32,10 @@ int countlines(char* file) {
 }    
 
 void load_dataset(data_t *data, char* file, int npoints) {
-    int i = 0;
     int n = countlines(file);
-    
     FILE* fp = fopen(file, "r");
- 
+    
+    //initialize dataset with data read from file
     for(int i = 0; i < n; i++) 
         for(int j = 0; j < NDIM; j++) 
             fscanf(fp,"%f,", &data[i].data[j]);
@@ -63,8 +61,6 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
          #else
          	node = build_kdtree(points, n, axis, level);
          #endif
-         	
-         
     }
     else if (n == 0 || n == 1) {
     
@@ -75,18 +71,17 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
 	    first_ksplit(NULL, 0, -1, level+1, nprocs/2, rank);
 	} 
 	else {		
+	    // measure MPI time
 	    if(rank == 0 && level == 0)
 	        tssend = CPU_TIME;
-	    
 	        
 	    node = (struct knode*) malloc(sizeof(struct knode));
-	    //if the number of split is smaller than the number of processes,
-		//split again, take one side and give the other half to another process
 		
 	    // decide new splitting axis in a round-robin fashion
 	    int new_axis = (axis+1)%NDIM;//choose_split_dim(points, n, axis);
-	    // sort points with respect to chosen axis
-        int mid = sorting(points, n, new_axis);
+	    
+	    //sort points with respect to chosen axis
+        int mid = partitioning(points, n, new_axis);
 
 	    //once the axis is chosen, determine the value of the split
 	    //if data are homogeneous we can take the middle point 

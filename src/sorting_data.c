@@ -1,7 +1,7 @@
 #include "sorting_data.h"
 
 
-int sorting(data_t* data, int npoints, int axis) {
+int partitioning(data_t* data, int npoints, int axis) {
     
     #if defined(DEBUG)
         #if defined(_OPENMP)
@@ -13,7 +13,6 @@ int sorting(data_t* data, int npoints, int axis) {
     int start = 0, end = npoints, dim = axis;
 
     // pick up the closest to the median as pivot 
-
     int median = find_median(data, start, end, dim);
 
     //put pivot in last position
@@ -61,10 +60,8 @@ int find_median(data_t *data, int start, int end, int dim) {
     // find element which is closest to the median
     median = (max - min)/2 + min;
 
-    
-    for(int i = start; i < end; i++) {
+    for(int i = start; i < end; i++) 
        pivot = (abs(data[i].data[dim] - median) < abs(data[pivot].data[dim] - median)) ? i : pivot;
-    }
   
     return pivot; 
 }

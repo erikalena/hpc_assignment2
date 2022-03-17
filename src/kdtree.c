@@ -1,10 +1,5 @@
 #include "kdtree.h"
 
-/*
-	---------------
-	Auxiliary functions
-	--------------- 
-*/
 
 void print_kdtree(struct knode* node, int level, int nprocs, int rank) {
     FILE *fptr = fopen("final_kdtree.txt", "w");
@@ -58,11 +53,6 @@ int choose_split_dim(data_t *points, int n, int axis) {
 	return new_axis;
 }
 
-/*
-	---------------
-	Build up kdtree
-	--------------- 
-*/
 
 struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
     #if defined(DEBUG)
@@ -71,23 +61,21 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
         #endif
     #endif
     
-	// allocate memory for a new node or implement something different
-	// and more efficient in terms of tree-traversal (see slides, but in any case think about a list which does not need to manage all tree data ?)
     struct knode *node;
     
-    if (n == 0) {
+    if (n == 0) 
         node = NULL;
-    }
 	else {		
 	    node = (struct knode*) malloc(sizeof(struct knode));
+		
 		// decide new splitting axis in a round-robin fashion
-		int new_axis = (axis+1)%NDIM;//choose_split_dim(points, n, axis);
+		int new_axis = (axis+1)%NDIM; //choose_split_dim(points, n, axis);
 		
 		// sort points with respect to chosen axis
-        int mid = sorting(points, n, new_axis);
+        int mid = partitioning(points, n, new_axis);
       
-		//once the axis is chosen, determine the value of the split
-		//if data are homogeneous we can take the middle point 
+		// once the axis is chosen, determine the value of the split
+		// if data are homogeneous we can take the middle point 
 		int n_left = mid;
 	    int n_right =  (n - n_left -1) ;
 
