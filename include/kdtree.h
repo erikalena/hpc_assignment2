@@ -9,7 +9,7 @@
                   (double)ts.tv_nsec * 1e-9)
 
     
-static struct timespec ts;
+struct timespec ts;
 
 /** each kdtree point is an array of k values */
 typedef float_t kpoint[NDIM];

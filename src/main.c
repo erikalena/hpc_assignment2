@@ -31,21 +31,14 @@ int main(int argc, char** argv) {
             npoints = countlines(argv[2]);
             data = (data_t*)malloc(npoints*sizeof(data_t));
             load_dataset(data, argv[2], npoints);
-          //  MPI_Bcast(&npoints, 1, MPI_INT, 0, MPI_COMM_WORLD);
         }
 	    else {
 	        // otherwise generate points randomly
 	        data = (data_t*)malloc(npoints*sizeof(data_t));
-	        //#if defined(_OPENMP)
-            //#pragma omp parallel for
-                for (int i = 0; i < npoints; i++ )
-                    for (int j = 0; j < NDIM; j++)
-                        data[i].data[j] = drand48()*MAX_VALUE;
-          /*  #else
-                for (int i = 0; i < npoints; i++ )
-                    for (int j = 0; j < NDIM; j++)
-                        data[i].data[j] = drand48()*MAX_VALUE;
-	        #endif*/
+	       
+            for (int i = 0; i < npoints; i++ )
+                for (int j = 0; j < NDIM; j++)
+                    data[i].data[j] = drand48()*MAX_VALUE;
 	    }
     }
     MPI_Bcast(&npoints, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -65,16 +58,8 @@ int main(int argc, char** argv) {
     if(my_rank == master) { 
         level = 0;
         tstart = CPU_TIME;
-        /*#if defined(_OPENMP)
-            #pragma omp parallel
-            {
-                #pragma omp single */
-	                root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
-                
-	/*        }
-	    #else
-	         root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
-	    #endif*/
+
+        root = first_ksplit(data, npoints, -1, level, nprocs, my_rank);
 	} 
     
     // each process receives the size of its subset and 
@@ -94,15 +79,7 @@ int main(int argc, char** argv) {
         int pow = 1 << level;
         
         //while the axis used at the previous level is usually (level+1)%2
-       /* #if defined(_OPENMP)
-        #pragma omp parallel
-        {
-            #pragma omp single */
-            root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
-       /* }
-        #else
-          root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
-        #endif*/
+        root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
     }
     // wait for each process for finishing building
     MPI_Barrier(MPI_COMM_WORLD);
@@ -113,7 +90,7 @@ int main(int argc, char** argv) {
     }
     
     //print the tree
-    //print_kdtree(root, level, nprocs, my_rank);
+    print_kdtree(root, level, nprocs, my_rank);
     
     free_tree(root);
     free(received);

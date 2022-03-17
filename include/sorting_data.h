@@ -40,9 +40,8 @@
 #define mpif_t MPI_DOUBLE
 #endif
 
-#define NDIM 2
-#define X 0
-#define Y 1
+#define NDIM 3
+
 
 #define NPOINTS 100000
 #define MAX_VALUE 100000

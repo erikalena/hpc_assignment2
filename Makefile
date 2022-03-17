@@ -23,7 +23,7 @@ endif
 
 obj/omp_%.o: $(SRC)/%.c $(deps)
 	$(MPICC) $(OPENMP) -c -o $@ $< $(CFLAGS)
-	
+
 omp_kdtree: $(objs_omp)
 	$(MPICC) $(CFLAGS) $(OPENMP) $^ -o $@ 
 	

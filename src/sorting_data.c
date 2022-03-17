@@ -53,16 +53,11 @@ int find_median(data_t *data, int start, int end, int dim) {
     float_t min = MAX_VALUE, max = MIN_VALUE;
     float_t median;
     int pivot = 0;
-    
-  /* #pragma omp parallel
-    {
-        #pragma omp for reduction(max:max) reduction(min:min)*/
-            for(int i = start; i < end; i++) {
-                max = data[i].data[dim] > max ? data[i].data[dim] : max;
-                min = data[i].data[dim] < min ? data[i].data[dim] : min;
-            }
-    // }
    
+    for(int i = start; i < end; i++) {
+        max = data[i].data[dim] > max ? data[i].data[dim] : max;
+        min = data[i].data[dim] < min ? data[i].data[dim] : min;
+    }
     // find element which is closest to the median
     median = (max - min)/2 + min;
 
@@ -70,29 +65,7 @@ int find_median(data_t *data, int start, int end, int dim) {
     for(int i = start; i < end; i++) {
        pivot = (abs(data[i].data[dim] - median) < abs(data[pivot].data[dim] - median)) ? i : pivot;
     }
-    /*
-    int index =0;
-    min = MAX_VALUE;
-    #pragma omp parallel
-    {
-        int index_local = 0;
-        double min_local = MAX_VALUE;  
-        #pragma omp for 
-        for (int i = start; i < end; i++) {        
-            if (fabs(data[i].data[dim]-median) <= min_local) {
-                min_local = fabs(data[i].data[dim]-median);
-                index_local = i;
-            }
-        }
-        #pragma omp critical 
-        {
-            if (min_local < min) {
-                min = min_local;
-                index = index_local;
-            }
-        }
-    }
-    pivot = index;*/
+  
     return pivot; 
 }
 

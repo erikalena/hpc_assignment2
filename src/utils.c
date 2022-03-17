@@ -34,13 +34,13 @@ int countlines(char* file) {
 
 void load_dataset(data_t *data, char* file, int npoints) {
     int i = 0;
+    int n = countlines(file);
+    
     FILE* fp = fopen(file, "r");
-    float x,y;
-    while(fscanf(fp,"%f,%f", &x, &y) ==2) {
-	    data[i].data[0] = x;
-	    data[i].data[1] = y;
-	    i++;
-    }
+ 
+    for(int i = 0; i < n; i++) 
+        for(int j = 0; j < NDIM; j++) 
+            fscanf(fp,"%f,", &data[i].data[j]);
     fclose(fp);
 }
 
