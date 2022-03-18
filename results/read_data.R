@@ -149,7 +149,8 @@ ggplot() +
   labs(x = "num threads", y = "Speedup") +
   theme(legend.title = element_blank()) +
   scale_colour_manual(values = c( "parallel partitioning" = "#d16206", "serial partitioning" = "#1b572c")) +
-  labs(title = "")
+  labs(title = "") +
+  theme(axis.text = element_text(size = rel(1.2)))
   
   ggsave("img/comparison_parallel_partitioning_speedup.png", width = 10, height = 8, dpi = 150)
   

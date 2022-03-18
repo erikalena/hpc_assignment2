@@ -37,9 +37,11 @@ plot_times <- function(df,name) {
     labs(x = "num threads", y = "Time taken (s)") +
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("1 procs" = "#a6620f", "2 procs" = "#2bacbd", "4 procs" = "#8f34eb", "8 procs" = "#1b572c", "16 procs" = "#e1e809" )) +
-    labs(title = "")
+    labs(title = "")+
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  #ggsave(paste0( "img/times_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/times_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
@@ -71,9 +73,11 @@ plot_speedup <- function(df, name) {
     labs(x = "num threads", y = "Speedup") +
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("1 procs" = "#a6620f", "2 procs" = "#2bacbd", "4 procs" = "#8f34eb", "8 procs" = "#1b572c", "16 procs" = "#e1e809" )) +
-    labs(title = "")
+    labs(title = "")+
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  #ggsave(paste0( "img/speedup_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/speedup_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
@@ -143,7 +147,9 @@ plot_efficiency <- function(df) {
     labs(x = "num threads", y = "Efficiency") +
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("1 procs" = "#a6620f", "2 procs" = "#2bacbd", "4 procs" = "#8f34eb", "8 procs" = "#1b572c", "16 procs" = "#e1e809" )) +
-    labs(title = "")
+    labs(title = "") +
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
 }
 
 model <- function(df, name) {
@@ -175,9 +181,11 @@ model <- function(df, name) {
     labs(x = "num threads", y = "Time taken (s)") +
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("empirical" = "#a6620f", "model" = "#2bacbd" )) +
-    labs(title = "")
+    labs(title = "") +
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  #ggsave(paste0( "img/model_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/model_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
@@ -197,8 +205,11 @@ plot_times_mpi <- function(df, name) {
     
     labs(x = "mpi procs", y = "Time taken (s)") +
     theme(legend.title = element_blank()) +
-    labs(title = "")
- # ggsave(paste0( "img/times_", name, ".png"), width = 10, height = 8, dpi = 150)
+    labs(title = "") +
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
+  
+  #ggsave(paste0( "img/times_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
@@ -219,9 +230,11 @@ plot_speedup_mpi <- function(df, name) {
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("1 thread" = "#a6620f", "4 threads" = "#2bacbd", "8 threads" =  "#1b572c")) +
     labs(x = "mpi procs", y = "Speedup") +
-    labs(title = "")
+    labs(title = "")+
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  #ggsave(paste0( "img/speedup_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/speedup_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
@@ -246,9 +259,11 @@ plot_speedup_weak_mpi <- function(df, name) {
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("1 thread" = "#a6620f", "4 threads" = "#8f34eb", "8 threads" =  "#1b572c")) +
     labs(x = "mpi procs", y = "Speedup") +
-    labs(title = "")
+    labs(title = "")+
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  #ggsave(paste0( "img/speedup_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/speedup_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
@@ -287,9 +302,11 @@ model_mpi <- function(df, name) {
     labs(x = "mpi procs", y = "Time taken (s)") +
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("empirical" = "#a6620f", "model" = "#2bacbd" )) +
-    labs(title = "")
+    labs(title = "")+
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  #ggsave(paste0( "img/model_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/model_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
@@ -341,9 +358,11 @@ model_omp_mpi <- function(df, name) {
     labs(x = "num threads", y = "Time taken (s)") +
     theme(legend.title = element_blank()) +
     scale_colour_manual(values = c("empirical" = "#a6620f", "model" = "#2bacbd" )) +
-    labs(title = "")
+    labs(title = "") +
+    theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+          title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  #ggsave(paste0( "img/model_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/model_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 
