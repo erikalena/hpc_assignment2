@@ -14,7 +14,7 @@ module load openmpi-4.1.1+gnu-9.3.0
 times=[]
 mpi_times=[]
 
-printf '%s,%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken' 'mpi_time' 'problem_size' > results/weak_scaling_cpu_new.csv
+printf '%s,%s,%s,%s,%s\n' 'n_procs' 'n_threads' 'time_taken' 'mpi_time' 'problem_size' > results/weak_scaling_cpu.csv
 
 # establish the maximum number of processors on which you want to test the code
 # provide it as the maximum p s.t. 2^p = n. of processors
@@ -41,7 +41,7 @@ do
 	mpi_times[j]=$(cat time_taken.txt | grep send | cut -f2 -d ':')
         times[j]=$(cat time_taken.txt | grep kdtree | cut -f2 -d ':')  
 
-        printf '%s,%s,%s,%s,%s\n' ${n} ${j} ${times[j]} ${mpi_times[j]} ${ps} >> results/weak_scaling_cpu_new.csv 
+        printf '%s,%s,%s,%s,%s\n' ${n} ${j} ${times[j]} ${mpi_times[j]} ${ps} >> results/weak_scaling_cpu.csv 
     done
 done
 
