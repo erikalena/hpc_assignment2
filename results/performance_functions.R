@@ -115,7 +115,7 @@ plot_speedup_weak <- function(df, name) {
     scale_colour_manual(values = c("1 procs" = "#a6620f", "2 procs" = "#2bacbd", "4 procs" = "#8f34eb", "8 procs" = "#1b572c", "16 procs" = "#e1e809" )) +
     labs(title = "")
   
-  #ggsave(paste0( "img/speedup_", name, ".png"), width = 10, height = 8, dpi = 150)
+  #ggsave(paste0( "img/speedup_", name, ".png"), width = 12, height = 8, dpi = 150)
   
 }
 

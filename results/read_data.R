@@ -27,7 +27,7 @@ df_strong_gpu <- data.frame(read.csv("strong_scaling_gpu.csv"))
 
 ### plot results wrt MPI
   plot_times_mpi(df_strong_gpu, "strong_gpu_mpi")
-  plot_speedup_mpi(df_strong_gpu)
+  plot_speedup_mpi(df_strong_gpu, "strong_gpu_mpi")
   
   model_mpi(df_strong_gpu, "strong_gpu_mpi")
 
@@ -79,7 +79,7 @@ df_strong_cpu <- data.frame(read.csv("strong_scaling_cpu.csv"))
 
 ### plot results wrt MPI
   plot_times_mpi(df_strong_cpu, "strong_cpu_mpi")
-  plot_speedup_mpi(df_strong_cpu)
+  plot_speedup_mpi(df_strong_cpu, "strong_gpu_mpi")
   
   model_mpi(df_strong_cpu, "strong_cpu_mpi")
   
@@ -133,9 +133,11 @@ ggplot() +
   labs(x = "num threads", y = "Time taken (s)") +
   theme(legend.title = element_blank()) +
   scale_colour_manual(values = c( "parallel partitioning" = "#d16206", "serial partitioning" = "#1b572c")) +
-  labs(title = "")
+  labs(title = "")+
+  theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+        title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
 
-#ggsave("img/comparison_parallel_partitioning.png", width = 10, height = 8, dpi = 150)
+ggsave("img/comparison_parallel_partitioning.png", width = 12, height = 8, dpi = 150)
 
 ### speedup
 ggplot() +
@@ -150,9 +152,10 @@ ggplot() +
   theme(legend.title = element_blank()) +
   scale_colour_manual(values = c( "parallel partitioning" = "#d16206", "serial partitioning" = "#1b572c")) +
   labs(title = "") +
-  theme(axis.text = element_text(size = rel(1.2)))
+  theme(axis.text = element_text(size = rel(1.2)), axis.title.x = element_text(size = rel(1.5)), axis.title.y = element_text(size = rel(1.2)),
+        title = element_text(size = rel(1.5)),legend.text = element_text(size=15) )
   
-  ggsave("img/comparison_parallel_partitioning_speedup.png", width = 10, height = 8, dpi = 150)
+  ggsave("img/comparison_parallel_partitioning_speedup.png", width = 12, height = 8, dpi = 150)
   
   
 ### 3d plot of cpu (strong scalability) timings
@@ -173,7 +176,11 @@ axy <- list(title = "threads")
 axz <- list(title = "time")
 
 library(plotly)
-fig <- plot_ly(x = s$mpi_procs, y = s$y, z = s$z) %>%  add_surface()  %>% layout(scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
+fig <- plot_ly(x = s$mpi_procs, y = s$y, z = s$z, marker = list(
+                                                                colorscale = list(c(0, rgb(33, 55, 55, max = 255)), 
+                                                                                  c(1, rgb(244, 244, 244, max = 255))),)) %>%  
+      add_surface()  %>% 
+      layout(scene = list(xaxis=axx,yaxis=axy,zaxis=axz))
 
 fig
 
