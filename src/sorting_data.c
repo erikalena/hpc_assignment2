@@ -4,17 +4,19 @@
 int partitioning(data_t* data, int npoints, int axis, int parallel) {
 
     int start = 0, end = npoints, dim = axis;
-
+    
+    // if openMP is not defined in any case the search
+    // for the median cannot be parallelized
+    #if !defined(_OPENMP) 
+        parallel = 0;
+    #endif
+    
     // pick up the closest to the median as pivot 
-    int median;
-    if(!parallel)
-        median = find_median(data, start, end, dim);
-    else 
-        median = find_median_parallel(data, start, end, dim);
+    int pivot = end-1;
+    int median = find_median(data, start, end, dim, parallel);
         
     //put pivot in last position
-    swap((void*)&data[median], (void*)&data[end-1]);
-    int pivot = end-1;
+    swap((void*)&data[median], (void*)&data[pivot]);
 
     int idx = -1;
     for(int j = start; j < end-1; j++) {
@@ -41,68 +43,63 @@ int partitioning(data_t* data, int npoints, int axis, int parallel) {
 
 
     
-int find_median(data_t *data, int start, int end, int dim) {
-    // find max and min
+int find_median(data_t *data, int start, int end, int dim, int parallel) {
     float_t min = MAX_VALUE, max = MIN_VALUE;
-    float_t median;
-    int pivot = 0;
-   
-    for(int i = start; i < end; i++) {
-        max = data[i].data[dim] > max ? data[i].data[dim] : max;
-        min = data[i].data[dim] < min ? data[i].data[dim] : min;
-    }
-    // find element which is closest to the median
-    median = (max - min)/2 + min;
-
-    for(int i = start; i < end; i++) 
-       pivot = (abs(data[i].data[dim] - median) < abs(data[pivot].data[dim] - median)) ? i : pivot;
-  
-    return pivot; 
-}
-
-int find_median_parallel(data_t *data, int start, int end, int dim) {
-  
-    float_t min = MAX_VALUE, max = MIN_VALUE;
-
-    #if defined(_OPENMP) 
-    #pragma omp parallel
-    {
-        #pragma omp for reduction(max:max) reduction(min:min)
-            for(int i = start; i < end; i++) {
-                max = data[i].data[dim] > max ? data[i].data[dim] : max;
-                min = data[i].data[dim] < min ? data[i].data[dim] : min;
-            }
-    }
-    #endif
-    // find element which is closest to the median
-    float_t median = (max - min)/2 + min;
-
-    int index = 0;
-    min = MAX_VALUE;
-   
-    #if defined(_OPENMP)
-    #pragma omp parallel shared(index, median)
-    {
-        int index_local = 0;
-        double min_local = MAX_VALUE;  
-        #pragma omp for 
-        for (int i = start; i < end; i++) {        
-            if (fabs(data[i].data[dim]-median) <= min_local) {
-                min_local = fabs(data[i].data[dim]-median);
-                index_local = i;
-            }
+        
+    if(!parallel) {
+        for(int i = start; i < end; i++) {
+            max = data[i].data[dim] > max ? data[i].data[dim] : max;
+            min = data[i].data[dim] < min ? data[i].data[dim] : min;
         }
-        #pragma omp critical 
+        
+        // find element which is closest to the median
+        float_t median = (max - min)/2 + min;
+        int pivot = 0;
+        
+        for(int i = start; i < end; i++) 
+            pivot = (abs(data[i].data[dim] - median) < abs(data[pivot].data[dim] - median)) ? i : pivot;
+            
+        return pivot;
+    }
+    else{
+        int pivot = 0;
+        #if defined(_OPENMP) 
+        #pragma omp parallel
         {
-            if (min_local < min) {
-                min = min_local;
-                index = index_local;
+            #pragma omp for reduction(max:max) reduction(min:min)
+                for(int i = start; i < end; i++) {
+                    max = data[i].data[dim] > max ? data[i].data[dim] : max;
+                    min = data[i].data[dim] < min ? data[i].data[dim] : min;
+                }
+        }
+        
+        // find element which is closest to the median
+        float_t median = (max - min)/2 + min;
+        min = MAX_VALUE;
+        
+        #pragma omp parallel shared(pivot, median)
+        {
+            int index_local = 0;
+            double min_local = MAX_VALUE;  
+            #pragma omp for 
+            for (int i = start; i < end; i++) {        
+                if (fabs(data[i].data[dim]-median) < min_local) {
+                    min_local = fabs(data[i].data[dim]-median);
+                    index_local = i;
+                }
+            }
+            #pragma omp critical 
+            {
+                if (min_local < min) {
+                    min = min_local;
+                    pivot = index_local;
+                }
             }
         }
+        #endif
+        return pivot;
     }
-    #endif
-    
-    return index; 
+ 
 }
 
 int verify_partitioning( data_t *data, int start, int end, int mid, int dim) {

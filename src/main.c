@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     
-    //load dataset
+    // load dataset
     if(my_rank == master) {
         if(argc > 1) 
             npoints = atoi(argv[1]);
@@ -75,10 +75,10 @@ int main(int argc, char** argv) {
 	if (my_rank != master) {
 	     MPI_Recv(received, subtree_size, mpi_point, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	     
-	    //number of process which work on each subtree is nprocs/2^level
+	    // number of process which work on each subtree is nprocs/2^level
         int pow = 1 << level;
         
-        //while the axis used at the previous level is usually (level+1)%2
+        // while the axis used at the previous level is (level+1)%2
         root = first_ksplit(received, subtree_size, (level+1)%NDIM, level, nprocs/pow, my_rank);
     }
     // wait for each process for finishing building

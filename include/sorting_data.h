@@ -36,13 +36,17 @@ verify_t  verify_partitioning;
 
 /** 
     The following function move data points with respect to a given pivot, 
-    such that all the elements < p are on left side and all the others are 
+    such that all the elements < pivot are on left side and all the others are 
     on right side. 
 */
 int partitioning(data_t *data, int length, int axis, int parallel);
 
-int find_median(data_t *data, int start, int end, int dim);
-
-int find_median_parallel(data_t *data, int start, int end, int dim);
+/** 
+    Mid-point is found for partitioning the data structure.
+    Both functions can take an additional parameter which can be
+    used to specify if we want to parallelize the search of the median
+    using openmp 
+*/
+int find_median(data_t *data, int start, int end, int dim, int parallel);
 
 void swap(data_t* a, data_t* b);
