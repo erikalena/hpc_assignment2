@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
@@ -30,19 +31,18 @@ typedef struct
 
 typedef int (compare_t)(const void*, const void*, int);
 typedef int (verify_t)(data_t *, int, int, int, int);
-
 compare_t compare;
 verify_t  verify_partitioning;
-verify_t  show_array;
-
 
 /** 
     The following function move data points with respect to a given pivot, 
     such that all the elements < p are on left side and all the others are 
     on right side. 
 */
-int partitioning(data_t *data, int length, int axis);
+int partitioning(data_t *data, int length, int axis, int parallel);
 
 int find_median(data_t *data, int start, int end, int dim);
+
+int find_median_parallel(data_t *data, int start, int end, int dim);
 
 void swap(data_t* a, data_t* b);

@@ -72,7 +72,7 @@ struct knode* build_kdtree(data_t *points, int n, int axis, int level) {
 		int new_axis = (axis+1)%NDIM; //choose_split_dim(points, n, axis);
 		
 		// sort points with respect to chosen axis
-        int mid = partitioning(points, n, new_axis);
+        int mid = partitioning(points, n, new_axis,0);
       
 		// once the axis is chosen, determine the value of the split
 		// if data are homogeneous we can take the middle point 

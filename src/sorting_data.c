@@ -1,20 +1,17 @@
 #include "sorting_data.h"
 
 
-int partitioning(data_t* data, int npoints, int axis) {
-    
-    #if defined(DEBUG)
-        #if defined(_OPENMP)
-        int nthreads = omp_get_num_threads();
-        printf("%d threads working, start partitioning the array..\n", nthreads);
-        #endif
-    #endif
+int partitioning(data_t* data, int npoints, int axis, int parallel) {
 
     int start = 0, end = npoints, dim = axis;
 
     // pick up the closest to the median as pivot 
-    int median = find_median(data, start, end, dim);
-
+    int median;
+    if(!parallel)
+        median = find_median(data, start, end, dim);
+    else 
+        median = find_median_parallel(data, start, end, dim);
+        
     //put pivot in last position
     swap((void*)&data[median], (void*)&data[end-1]);
     int pivot = end-1;
@@ -31,11 +28,8 @@ int partitioning(data_t* data, int npoints, int axis) {
     
     #if defined(DEBUG)
     #define CHECK {							\
-        if ( verify_partitioning( data, start, end, idx+1, dim ) ) {		\
+        if (verify_partitioning( data, start, end, idx+1, dim ) ) {		\
           printf( "partitioning is wrong\n");				\
-        }\
-        else{\
-             printf("Everything ok\n");\
         }}
     #else
     #define CHECK
@@ -66,7 +60,50 @@ int find_median(data_t *data, int start, int end, int dim) {
     return pivot; 
 }
 
+int find_median_parallel(data_t *data, int start, int end, int dim) {
+  
+    float_t min = MAX_VALUE, max = MIN_VALUE;
 
+    #if defined(_OPENMP) 
+    #pragma omp parallel
+    {
+        #pragma omp for reduction(max:max) reduction(min:min)
+            for(int i = start; i < end; i++) {
+                max = data[i].data[dim] > max ? data[i].data[dim] : max;
+                min = data[i].data[dim] < min ? data[i].data[dim] : min;
+            }
+    }
+    #endif
+    // find element which is closest to the median
+    float_t median = (max - min)/2 + min;
+
+    int index = 0;
+    min = MAX_VALUE;
+   
+    #if defined(_OPENMP)
+    #pragma omp parallel shared(index, median)
+    {
+        int index_local = 0;
+        double min_local = MAX_VALUE;  
+        #pragma omp for 
+        for (int i = start; i < end; i++) {        
+            if (fabs(data[i].data[dim]-median) <= min_local) {
+                min_local = fabs(data[i].data[dim]-median);
+                index_local = i;
+            }
+        }
+        #pragma omp critical 
+        {
+            if (min_local < min) {
+                min = min_local;
+                index = index_local;
+            }
+        }
+    }
+    #endif
+    
+    return index; 
+}
 
 int verify_partitioning( data_t *data, int start, int end, int mid, int dim) {
     int failure = 0;

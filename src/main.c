@@ -17,7 +17,8 @@ int main(int argc, char** argv) {
     
     if((nprocs & (nprocs - 1)) != 0) {
         if(my_rank == master)
-            printf("USAGE: This application is meant to be run with a number of processes which is a power of two.\n USAGE: mpirun -np nprocs kdtree [npoints] [file]\n");
+            printf("USAGE: This application is meant to be run with a number of processes which is a power of two.\n \
+            USAGE: mpirun -np nprocs kdtree [npoints] [file]\n");
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     
@@ -89,7 +90,7 @@ int main(int argc, char** argv) {
     }
     
     //print the tree
-    print_kdtree(root, level, nprocs, my_rank);
+    //print_kdtree(root, level, nprocs, my_rank);
     
     free_tree(root);
     free(received);

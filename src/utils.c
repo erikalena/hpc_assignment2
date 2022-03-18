@@ -81,7 +81,7 @@ struct knode* first_ksplit(data_t *points, int n, int axis, int level, int nproc
 	    int new_axis = (axis+1)%NDIM;//choose_split_dim(points, n, axis);
 	    
 	    //sort points with respect to chosen axis
-        int mid = partitioning(points, n, new_axis);
+        int mid = partitioning(points, n, new_axis,1);
 
 	    //once the axis is chosen, determine the value of the split
 	    //if data are homogeneous we can take the middle point 
