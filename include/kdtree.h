@@ -54,7 +54,7 @@ int choose_split_dim(data_t *points, int ndim, int axis);
 /**
  The following function builds up the kdtree recursively
 	- input:
-		- k-dimensional data points we are intersted in
+		- k-dimensional data points we are interested in
 		- number of points in the considered subset
 		- splitting dimension of the previous call
 		- current level in the final kdtree
